@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Jeremykenedy\LaravelNotifications\Http\Controllers\NotificationController;
 
 Route::group([
-    'prefix' => config('notifications.routes.prefix', 'notifications'),
+    'prefix'     => config('notifications.routes.prefix', 'notifications'),
     'middleware' => config('notifications.routes.middleware', ['web', 'auth']),
 ], function () {
     Route::get('/', [NotificationController::class, 'index'])->name('notifications.index');
@@ -22,7 +22,7 @@ Route::group([
 // Send notification GUI (separate middleware for admin access)
 if (config('notifications.send.enabled', true)) {
     Route::group([
-        'prefix' => config('notifications.routes.prefix', 'notifications').'/send',
+        'prefix'     => config('notifications.routes.prefix', 'notifications').'/send',
         'middleware' => config('notifications.send.middleware', ['web', 'auth', 'level:5']),
     ], function () {
         Route::get('/', [\Jeremykenedy\LaravelNotifications\Http\Controllers\SendNotificationController::class, 'create'])->name('notifications.send.create');

@@ -12,7 +12,8 @@ class NotificationController extends Controller
 {
     public function __construct(
         protected NotificationService $service,
-    ) {}
+    ) {
+    }
 
     public function count(Request $request)
     {

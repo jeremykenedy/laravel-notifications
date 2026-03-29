@@ -11,14 +11,16 @@ use Illuminate\Queue\SerializesModels;
 
 class NotificationCreated implements ShouldBroadcastNow
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable;
+    use SerializesModels;
 
     public function __construct(
         public readonly int $userId,
         public readonly string $title,
         public readonly string $message,
         public readonly int $count,
-    ) {}
+    ) {
+    }
 
     public function broadcastOn(): array
     {

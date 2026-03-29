@@ -1,19 +1,19 @@
 <?php
 
 return [
-    'enabled' => env('NOTIFICATIONS_ENABLED', true),
-    'per_page' => env('NOTIFICATIONS_PER_PAGE', 20),
+    'enabled'                => env('NOTIFICATIONS_ENABLED', true),
+    'per_page'               => env('NOTIFICATIONS_PER_PAGE', 20),
     'auto_mark_read_on_view' => env('NOTIFICATIONS_AUTO_READ', false),
 
     'bell' => [
-        'show_count' => true,
+        'show_count'        => true,
         'max_count_display' => 99,
-        'poll_interval_ms' => env('NOTIFICATIONS_POLL_MS', 30000),
+        'poll_interval_ms'  => env('NOTIFICATIONS_POLL_MS', 30000),
     ],
 
     'routes' => [
-        'enabled' => true,
-        'prefix' => 'notifications',
+        'enabled'    => true,
+        'prefix'     => 'notifications',
         'middleware' => ['web', 'auth'],
     ],
 
@@ -51,7 +51,7 @@ return [
     */
 
     'send' => [
-        'enabled' => env('NOTIFICATIONS_SEND_ENABLED', true),
+        'enabled'    => env('NOTIFICATIONS_SEND_ENABLED', true),
         'middleware' => ['web', 'auth', 'verified', 'level:5'],
     ],
 

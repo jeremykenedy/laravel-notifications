@@ -1,8 +1,6 @@
 <?php
 
 use Jeremykenedy\LaravelNotifications\Services\NotificationService;
-use Jeremykenedy\LaravelNotifications\Http\Controllers\NotificationController;
-use Jeremykenedy\LaravelNotifications\Http\Controllers\Api\NotificationApiController;
 
 it('can instantiate the NotificationService', function () {
     $service = new NotificationService();

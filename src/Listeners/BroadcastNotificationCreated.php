@@ -11,7 +11,7 @@ class BroadcastNotificationCreated
 {
     public function handle(NotificationSent $event): void
     {
-        if (! config('notifications.broadcast.enabled', true)) {
+        if (!config('notifications.broadcast.enabled', true)) {
             return;
         }
 
@@ -22,7 +22,7 @@ class BroadcastNotificationCreated
 
         $notifiable = $event->notifiable;
 
-        if (! method_exists($notifiable, 'unreadNotifications')) {
+        if (!method_exists($notifiable, 'unreadNotifications')) {
             return;
         }
 

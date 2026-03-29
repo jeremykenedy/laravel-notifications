@@ -34,14 +34,14 @@ class InstallCommand extends Command
         info("Installing notifications with {$css} + {$frontend}...");
 
         $this->call('vendor:publish', [
-            '--tag' => 'notifications-config',
+            '--tag'   => 'notifications-config',
             '--force' => true,
         ]);
 
         $this->updateEnv('UI_KIT_CSS', $css);
         $this->updateEnv('UI_KIT_FRONTEND', $frontend);
 
-        info("notifications installed successfully.");
+        info('notifications installed successfully.');
         info('Run: php artisan migrate && npm run build');
 
         return self::SUCCESS;
@@ -50,7 +50,7 @@ class InstallCommand extends Command
     protected function updateEnv(string $key, string $value): void
     {
         $path = base_path('.env');
-        if (! file_exists($path)) {
+        if (!file_exists($path)) {
             return;
         }
 

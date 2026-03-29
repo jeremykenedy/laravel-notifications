@@ -25,14 +25,14 @@ class SendNotificationController extends Controller
     public function send(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'message' => 'required|string|max:1000',
-            'audience' => 'required|in:all,role',
-            'role_id' => 'required_if:audience,role|nullable|integer',
-            'type' => 'nullable|in:info,success,warning,danger,system',
-            'action_url' => 'nullable|url|max:255',
+            'title'       => 'required|string|max:255',
+            'message'     => 'required|string|max:1000',
+            'audience'    => 'required|in:all,role',
+            'role_id'     => 'required_if:audience,role|nullable|integer',
+            'type'        => 'nullable|in:info,success,warning,danger,system',
+            'action_url'  => 'nullable|url|max:255',
             'action_text' => 'nullable|string|max:50',
-            'send_email' => 'nullable|boolean',
+            'send_email'  => 'nullable|boolean',
         ]);
 
         if ($validator->fails()) {
