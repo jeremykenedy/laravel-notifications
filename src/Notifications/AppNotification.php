@@ -37,7 +37,8 @@ class AppNotification extends Notification
         protected ?string $actionText = null,
         protected bool $sendEmail = false,
         protected ?string $icon = null,
-    ) {}
+    ) {
+    }
 
     public function via(object $notifiable): array
     {
@@ -52,7 +53,7 @@ class AppNotification extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $mail = (new MailMessage)
+        $mail = (new MailMessage())
             ->subject($this->title)
             ->line($this->message);
 
@@ -66,9 +67,9 @@ class AppNotification extends Notification
     public function toArray(object $notifiable): array
     {
         $data = [
-            'title' => $this->title,
+            'title'   => $this->title,
             'message' => $this->message,
-            'type' => $this->type,
+            'type'    => $this->type,
         ];
 
         if ($this->icon) {

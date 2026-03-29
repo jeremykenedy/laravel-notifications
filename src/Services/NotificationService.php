@@ -134,14 +134,14 @@ class NotificationService
     /**
      * Send a notification to one or more users.
      *
-     * @param  Authenticatable|iterable  $users  Single user or collection
-     * @param  string  $title  Notification title
-     * @param  string  $message  Notification message body
-     * @param  string|null  $type  Notification type: info, success, warning, danger, system
-     * @param  string|null  $actionUrl  Optional action URL
-     * @param  string|null  $actionText  Optional action button text
-     * @param  bool  $sendEmail  Also send via email
-     * @param  string|null  $icon  Optional icon name
+     * @param Authenticatable|iterable $users      Single user or collection
+     * @param string                   $title      Notification title
+     * @param string                   $message    Notification message body
+     * @param string|null              $type       Notification type: info, success, warning, danger, system
+     * @param string|null              $actionUrl  Optional action URL
+     * @param string|null              $actionText Optional action button text
+     * @param bool                     $sendEmail  Also send via email
+     * @param string|null              $icon       Optional icon name
      */
     public function send(
         Authenticatable|iterable $users,

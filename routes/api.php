@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Jeremykenedy\LaravelNotifications\Http\Controllers\Api\NotificationApiController;
 
 Route::group([
-    'prefix' => 'api/notifications',
+    'prefix'     => 'api/notifications',
     'middleware' => ['api', 'auth:sanctum'],
 ], function () {
     Route::get('/', [NotificationApiController::class, 'index'])->name('api.notifications.index');
