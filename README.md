@@ -4,6 +4,7 @@ A complete in-app notification center for Laravel with bell badge, unread count,
 
 [![Total Downloads](https://poser.pugx.org/jeremykenedy/laravel-notifications/d/total.svg)](https://packagist.org/packages/jeremykenedy/laravel-notifications)
 [![Latest Stable Version](https://poser.pugx.org/jeremykenedy/laravel-notifications/v/stable.svg)](https://packagist.org/packages/jeremykenedy/laravel-notifications)
+[![StyleCI](https://github.styleci.io/repos/1194862898/shield?branch=main)](https://github.styleci.io/repos/1194862898?branch=main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 #### Table of Contents
