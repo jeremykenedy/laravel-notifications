@@ -1,9 +1,23 @@
 <?php
 
 return [
-    'enabled'                => env('NOTIFICATIONS_ENABLED', true),
-    'per_page'               => env('NOTIFICATIONS_PER_PAGE', 20),
-    'auto_mark_read_on_view' => env('NOTIFICATIONS_AUTO_READ', false),
+    /*
+    |--------------------------------------------------------------------------
+    | Frameworks
+    |--------------------------------------------------------------------------
+    | Which set of views this package renders. When either value is left empty
+    | the matching laravel-ui-kit setting is used, so an application already
+    | driven by UI_KIT_CSS keeps the framework it is on today.
+    |
+    | css_framework: tailwind, bootstrap5, bootstrap4
+    | frontend:      blade, livewire, vue, react, svelte
+    |
+    */
+
+    'css_framework' => env('NOTIFICATIONS_CSS_FRAMEWORK'),
+    'frontend'      => env('NOTIFICATIONS_FRONTEND'),
+
+    'per_page' => env('NOTIFICATIONS_PER_PAGE', 20),
 
     'bell' => [
         'show_count'        => true,
@@ -19,6 +33,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | API Routes
+    |--------------------------------------------------------------------------
+    | The JSON endpoints are registered separately from the web routes so an
+    | application can disable them, move them, or guard them with something
+    | other than Sanctum.
+    |
+    */
+
+    'api' => [
+        'enabled'    => true,
+        'prefix'     => 'api/notifications',
+        'middleware' => ['api', 'auth:sanctum'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Flash Messages
     |--------------------------------------------------------------------------
     | When enabled, success/error flash messages are shown inline on the
@@ -28,18 +58,6 @@ return [
     */
 
     'flash_messages' => env('NOTIFICATIONS_FLASH_MESSAGES', false),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Confirm Style
-    |--------------------------------------------------------------------------
-    | Controls how destructive actions (delete) are confirmed.
-    | 'modal' = in-app confirmation modal (recommended)
-    | 'browser' = native browser confirm() dialog
-    |
-    */
-
-    'confirm_style' => env('NOTIFICATIONS_CONFIRM_STYLE', 'modal'),
 
     /*
     |--------------------------------------------------------------------------

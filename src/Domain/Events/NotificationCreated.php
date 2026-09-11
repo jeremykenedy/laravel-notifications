@@ -15,7 +15,7 @@ class NotificationCreated implements ShouldBroadcastNow
     use SerializesModels;
 
     public function __construct(
-        public readonly int $userId,
+        public readonly int|string $userId,
         public readonly string $title,
         public readonly string $message,
         public readonly int $count,
