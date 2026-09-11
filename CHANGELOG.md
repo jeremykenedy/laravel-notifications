@@ -2,7 +2,7 @@
 
 All notable changes to this package are documented here.
 
-## Unreleased
+## 2.0.0 - 2026-09-11
 
 ### Fixed
 
@@ -43,3 +43,13 @@ All notable changes to this package are documented here.
 ### Removed
 
 - The `enabled`, `auto_mark_read_on_view` and `confirm_style` config keys. No code in the package read any of them.
+
+## 1.1.0 - 2026-09-11
+
+### Added
+
+- Five JSON endpoints that the web routes already had: mark as unread, archive, restore from archive, archive all, and delete all. Thanks to @badeeb in #2.
+
+## 1.0.0 - 2026-03-29
+
+Initial release.
