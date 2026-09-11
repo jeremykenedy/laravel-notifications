@@ -3,6 +3,7 @@
 .DS_Store
 Thumbs.db
 .phpunit.result.cache
+.phpunit.cache
 .idea
 .vscode
 *.swp
@@ -10,3 +11,9 @@ Thumbs.db
 composer.lock
 package-lock.json
 .env
+
+/.claude
+/.cursor
+/CLAUDE.md
+/workflows
+/.github/copilot-instructions.md
