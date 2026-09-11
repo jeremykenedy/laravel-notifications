@@ -45,6 +45,7 @@ class SendNotificationController extends Controller
                 type: $data['type'] ?? 'info',
                 actionUrl: $data['action_url'] ?? null,
                 actionText: $data['action_text'] ?? null,
+                sendEmail: (bool) ($data['send_email'] ?? false),
             )
             : $this->service->sendToAll(
                 title: $data['title'],

@@ -1,6 +1,8 @@
 <?php
 
 use Jeremykenedy\LaravelNotifications\Tests\Fixtures\User;
+use Illuminate\Support\Facades\Notification;
+use Jeremykenedy\LaravelNotifications\Notifications\AppNotification;
 
 it('shows the send form with the roles and the user count', function () {
     $this->makeUser();
@@ -98,6 +100,48 @@ it('rejects a send that is missing required fields', function (array $payload, s
     'unknown type'      => [['title' => 'Title', 'message' => 'Body', 'audience' => 'all', 'type' => 'purple'], 'type'],
     'bad action url'    => [['title' => 'Title', 'message' => 'Body', 'audience' => 'all', 'action_url' => 'not a url'], 'action_url'],
 ]);
+
+it('honours the email checkbox when sending to a role', function () {
+    $admin = $this->makeUser('admin@example.test');
+    $admin->roles()->attach($this->makeRole('admin')->id);
+
+    Notification::fake();
+
+    $this->actingAs($admin)->post(route('notifications.send.store'), [
+        'title'      => 'Admins only',
+        'message'    => 'For the admin team.',
+        'audience'   => 'role',
+        'role_id'    => (string) $admin->roles()->first()->id,
+        'send_email' => '1',
+    ])->assertSessionHasNoErrors();
+
+    Notification::assertSentTo(
+        $admin,
+        AppNotification::class,
+        fn ($notification) => in_array('mail', $notification->via($admin), true),
+    );
+});
+
+it('keeps a rejected audience value out of the alpine expression', function () {
+    $payload = "all'});window.pwned=1;({a:'";
+
+    // Validation fails, so the form is redisplayed with the rejected value in
+    // old input and interpolated back into the Alpine attribute.
+    $content = $this->actingAs($this->makeUser())
+        ->from(route('notifications.send.create'))
+        ->followingRedirects()
+        ->post(route('notifications.send.store'), ['title' => 'T', 'message' => 'M', 'audience' => $payload])
+        ->getContent();
+
+    expect(preg_match('/<form[^>]*x-data="([^"]*)"/', $content, $matches))->toBe(1);
+
+    // The browser decodes the attribute before Alpine parses it, so entity
+    // escaping alone does not keep the value inside the string literal.
+    $decoded = html_entity_decode($matches[1], ENT_QUOTES);
+
+    expect($decoded)->toContain('audience:')
+        ->and($decoded)->not->toContain("'});");
+});
 
 it('rejects guests on the send routes', function () {
     $this->get(route('notifications.send.create'))->assertRedirect(route('login'));

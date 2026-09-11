@@ -73,7 +73,7 @@ php artisan notifications:install --css=tailwind --frontend=blade
 php artisan migrate
 ```
 
-The package needs Laravel's `notifications` table. If your application does not have one yet:
+The package needs Laravel's `notifications` table. If your application does not have one, the package migration creates it, including the `archived_at` column it adds. If you would rather own that migration yourself, generate it before installing the package:
 
 ```bash
 php artisan make:notifications-table
@@ -176,7 +176,7 @@ $service->markAllAsRead($user);
 
 ### Archive Notifications
 
-Archiving keeps a notification without leaving it in the inbox. Archiving an unread notification also marks it read.
+Archiving keeps a notification without leaving it in the inbox. Archiving an unread notification also marks it read, one at a time or in bulk. Notifications that were already read keep the time they were originally read.
 
 ```php
 $service->archive($user, $notificationId);
@@ -336,7 +336,7 @@ $service->deleteAll($user);                   // int, how many deleted
 
 $service->send($users, $title, $message, $type, $actionUrl, $actionText, $sendEmail, $icon);
 $service->sendToAll($title, $message, $type, $actionUrl, $actionText, $sendEmail);   // int
-$service->sendToRole($slug, $title, $message, $type, $actionUrl, $actionText);        // int
+$service->sendToRole($slug, $title, $message, $type, $actionUrl, $actionText, $sendEmail); // int
 ```
 
 The single notification methods return `false` when the id does not exist or belongs to another user, and never touch a row they do not own.
@@ -392,6 +392,9 @@ Nothing in the public API was renamed or removed, and no route name changed. Thr
 - `notifications:install` and `notifications:switch` now write `NOTIFICATIONS_CSS_FRAMEWORK` and `NOTIFICATIONS_FRONTEND` rather than `UI_KIT_CSS` and `UI_KIT_FRONTEND`. Applications that set the `UI_KIT_*` variables keep working, because those are still read as the fallback.
 - The Livewire component now lists the inbox rather than every notification, matching the Blade view.
 - Sending to a role that does not exist returns a validation error instead of silently sending to the `user` role.
+- `archiveAll` now marks unread notifications as read, matching what archiving one at a time already did. Unarchiving such a notification brings it back read rather than unread.
+- `sendToRole` gained an optional trailing `$sendEmail` argument, so the send form's email checkbox now applies to role audiences as well as to all users. Existing calls are unaffected.
+- The migration creates the `notifications` table when the application has none, rather than skipping and leaving `archived_at` behind for good.
 
 The `enabled`, `auto_mark_read_on_view` and `confirm_style` config keys were removed. None of them were ever read by any code in the package, so removing them changes no behaviour.
 

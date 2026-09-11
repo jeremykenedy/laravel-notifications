@@ -14,7 +14,7 @@
 
 @section('content')
 <div class="container mx-auto max-w-4xl px-4 py-8">
-    <nav aria-label="Breadcrumb" class="mb-4">
+    <nav aria-label="{{ __('notifications::notifications.breadcrumb') }}" class="mb-4">
         <ol class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 list-none p-0 m-0">
             <li><a href="{{ route('notifications.index') }}" class="hover:text-gray-700 dark:hover:text-gray-200">{{ __('notifications::notifications.notifications') }}</a></li>
             <li aria-hidden="true">/</li>
@@ -39,7 +39,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('notifications.send.store') }}" x-data="{ audience: '{{ old('audience', 'all') }}' }">
+            <form method="POST" action="{{ route('notifications.send.store') }}" x-data="{ audience: @js(old('audience', 'all')) }">
                 @csrf
 
                 <div class="space-y-5">

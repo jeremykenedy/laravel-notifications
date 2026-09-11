@@ -1,6 +1,8 @@
 <?php
 
 use Jeremykenedy\LaravelNotifications\Services\NotificationService;
+use Illuminate\Support\Facades\Notification;
+use Jeremykenedy\LaravelNotifications\Notifications\AppNotification;
 
 it('resolves the service as a singleton', function () {
     expect(app(NotificationService::class))
@@ -101,6 +103,43 @@ it('archives everything that is not already archived', function () {
 
     expect($this->service()->archiveAll($user))->toBe(1)
         ->and($this->service()->archivedCount($user))->toBe(2);
+});
+
+it('marks unread notifications as read when archiving in bulk', function () {
+    $user = $this->makeUser();
+    $this->notify($user, 'One');
+    $this->notify($user, 'Two');
+
+    $this->service()->archiveAll($user);
+
+    expect($user->notifications()->whereNull('read_at')->count())->toBe(0)
+        ->and($this->service()->unreadCount($user))->toBe(0);
+});
+
+it('keeps the original read time when archiving in bulk', function () {
+    $user = $this->makeUser();
+    $read = $this->notify($user, 'Already read');
+    $this->service()->markAsRead($user, $read->id);
+    $readAt = $read->fresh()->read_at;
+
+    $this->travelTo(now()->addMinutes(5));
+    $this->service()->archiveAll($user);
+
+    expect($read->fresh()->read_at->timestamp)->toBe($readAt->timestamp);
+});
+
+it('sends to a role by email when asked to', function () {
+    $admin = $this->makeUser('admin@example.test');
+    $admin->roles()->attach($this->makeRole('admin')->id);
+
+    Notification::fake();
+    $this->service()->sendToRole('admin', 'Title', 'Message', 'info', null, null, true);
+
+    Notification::assertSentTo(
+        $admin,
+        AppNotification::class,
+        fn ($notification) => in_array('mail', $notification->via($admin), true),
+    );
 });
 
 it('deletes a single notification and every notification', function () {

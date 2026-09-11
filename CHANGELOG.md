@@ -15,6 +15,10 @@ All notable changes to this package are documented here.
 - The `archived_at` migration failed when the `notifications` table did not exist yet. Both `up` and `down` now check for the table first.
 - The bell partial only ever existed in Tailwind markup. Bootstrap 5 and Bootstrap 4 now have their own.
 - Notification titles containing a quote or newline broke the Alpine filter expression, which was escaped with `addslashes`.
+- The send form interpolated old input straight into an Alpine attribute. Entity escaping does not help there, because the browser decodes the attribute before Alpine evaluates it, so a rejected `audience` value could break out of the expression. It is serialized with `@js` now.
+- The `archived_at` migration skipped silently when the `notifications` table was absent, which is the normal state on a fresh install, because Laravel generates its own notifications migration on demand and it usually sorts later. The migration was then recorded as complete and the column never appeared. It creates the table when there is none.
+- `archiveAll` left unread notifications unread, while archiving one at a time marked it read.
+- The send form's email checkbox was ignored for role audiences, because `sendToRole` had no way to pass the flag through.
 
 ### Added
 
@@ -32,7 +36,8 @@ All notable changes to this package are documented here.
 - The Livewire component delegates to `NotificationService` and lists the inbox rather than every notification, matching the Blade view.
 - Sending to a role that cannot be found returns a validation error rather than silently sending to the `user` role.
 - Send validation moved to a `SendNotificationRequest` form request.
-- Every user facing string in every view now comes from the translation file.
+- Every user facing string in every view now comes from the translation file, across all three CSS frameworks and the Livewire component.
+- `sendToRole` takes an optional trailing `$sendEmail` argument. Existing calls are unaffected.
 - Accessibility pass over the views: labelled icon buttons, visible focus rings, a labelled filter input, `aria-labelledby` on both modals, Escape closes them, and the pulse animation respects `prefers-reduced-motion`.
 
 ### Removed

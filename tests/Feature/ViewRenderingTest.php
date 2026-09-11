@@ -79,6 +79,38 @@ it('escapes notification content in the alpine filter expression', function () {
         ->and(substr_count($content, 'x-cloak'))->toBeGreaterThan(0);
 });
 
+it('resolves every translation key it renders in every css framework', function (string $css) {
+    $this->usingCssFramework($css);
+    $user = $this->makeUser();
+    $this->makeRole('admin');
+    $notification = $this->notify($user, 'Invoice ready');
+
+    $pages = [
+        route('notifications.index'),
+        route('notifications.send.create'),
+    ];
+
+    foreach ($pages as $url) {
+        $content = $this->actingAs($user)->get($url)->assertOk()->getContent();
+
+        // A missing key renders as the key itself.
+        expect($content)->not->toContain('notifications::notifications.');
+    }
+
+    $this->service()->archive($user, $notification->id);
+    $archived = $this->actingAs($user)->get(route('notifications.index', ['archived' => 1]))->assertOk()->getContent();
+
+    expect($archived)->not->toContain('notifications::notifications.');
+})->with(Frameworks::CSS);
+
+it('resolves every translation key the empty state renders', function (string $css) {
+    $this->usingCssFramework($css);
+
+    $content = $this->actingAs($this->makeUser())->get(route('notifications.index'))->assertOk()->getContent();
+
+    expect($content)->not->toContain('notifications::notifications.');
+})->with(Frameworks::CSS);
+
 it('requires authentication for the notification center', function () {
     $this->get(route('notifications.index'))->assertRedirect(route('login'));
 });

@@ -28,6 +28,8 @@ return [
     'confirm_delete_all_title' => 'Delete all notifications',
     'confirm_delete_all_body'  => 'Are you sure you want to delete all notifications? This cannot be undone.',
     'cancel'                   => 'Cancel',
+    'close'                    => 'Close',
+    'breadcrumb'               => 'Breadcrumb',
 
     'send'             => 'Send notification',
     'send_field_title' => 'Title',
