@@ -8,12 +8,12 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Jeremykenedy\LaravelNotifications\Providers\NotificationServiceProvider;
+use Jeremykenedy\LaravelNotifications\Services\NotificationService;
 use Jeremykenedy\LaravelNotifications\Support\Frameworks;
 use Jeremykenedy\LaravelNotifications\Tests\Fixtures\Role;
 use Jeremykenedy\LaravelNotifications\Tests\Fixtures\User;
 use Jeremykenedy\LaravelNotifications\Tests\Fixtures\UuidUser;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
-use Jeremykenedy\LaravelNotifications\Services\NotificationService;
 
 abstract class TestCase extends OrchestraTestCase
 {

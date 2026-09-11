@@ -1,8 +1,8 @@
 <?php
 
-use Jeremykenedy\LaravelNotifications\Services\NotificationService;
 use Illuminate\Support\Facades\Notification;
 use Jeremykenedy\LaravelNotifications\Notifications\AppNotification;
+use Jeremykenedy\LaravelNotifications\Services\NotificationService;
 
 it('resolves the service as a singleton', function () {
     expect(app(NotificationService::class))

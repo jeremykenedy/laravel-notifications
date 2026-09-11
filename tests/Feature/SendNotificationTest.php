@@ -1,8 +1,8 @@
 <?php
 
-use Jeremykenedy\LaravelNotifications\Tests\Fixtures\User;
 use Illuminate\Support\Facades\Notification;
 use Jeremykenedy\LaravelNotifications\Notifications\AppNotification;
+use Jeremykenedy\LaravelNotifications\Tests\Fixtures\User;
 
 it('shows the send form with the roles and the user count', function () {
     $this->makeUser();
