@@ -110,9 +110,13 @@ class NotificationService
 
     public function archiveAll(Authenticatable $user): int
     {
-        $query = $user->notifications()->whereNull('archived_at');
-        $count = $query->count();
-        $query->update(['archived_at' => now()]);
+        $count = $user->notifications()->whereNull('archived_at')->count();
+
+        // Archiving one notification marks it read, so archiving in bulk has to
+        // leave the same state behind. Already read notifications keep the time
+        // they were originally read.
+        $user->notifications()->whereNull('archived_at')->whereNull('read_at')->update(['read_at' => now()]);
+        $user->notifications()->whereNull('archived_at')->update(['archived_at' => now()]);
 
         return $count;
     }
@@ -199,11 +203,12 @@ class NotificationService
         ?string $type = 'info',
         ?string $actionUrl = null,
         ?string $actionText = null,
+        bool $sendEmail = false,
     ): int {
         $userModel = config('notifications.user_model', 'App\\Models\\User');
         $users = $userModel::whereHas('roles', fn ($q) => $q->where('slug', $roleSlug))->get();
 
-        $this->send($users, $title, $message, $type, $actionUrl, $actionText);
+        $this->send($users, $title, $message, $type, $actionUrl, $actionText, $sendEmail);
 
         return $users->count();
     }

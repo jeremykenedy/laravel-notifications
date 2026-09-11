@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace Jeremykenedy\LaravelNotifications\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Validator;
+use Jeremykenedy\LaravelNotifications\Http\Requests\SendNotificationRequest;
 use Jeremykenedy\LaravelNotifications\Services\NotificationService;
 
 class SendNotificationController extends Controller
 {
+    public function __construct(
+        protected NotificationService $service,
+    ) {
+    }
+
     public function create()
     {
         $roleModel = config('notifications.role_model', 'App\\Models\\Role');
@@ -22,66 +26,53 @@ class SendNotificationController extends Controller
         return view('notifications::send', compact('roles', 'userCount'));
     }
 
-    public function send(Request $request)
+    public function send(SendNotificationRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'title'       => 'required|string|max:255',
-            'message'     => 'required|string|max:1000',
-            'audience'    => 'required|in:all,role',
-            'role_id'     => 'required_if:audience,role|nullable|integer',
-            'type'        => 'nullable|in:info,success,warning,danger,system',
-            'action_url'  => 'nullable|url|max:255',
-            'action_text' => 'nullable|string|max:50',
-            'send_email'  => 'nullable|boolean',
-        ]);
+        $data = $request->validated();
+        $role = $request->audience() === 'role' ? $this->findRole($request->roleId()) : null;
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
+        if ($request->audience() === 'role' && $role === null) {
+            return back()
+                ->withInput()
+                ->withErrors(['role_id' => __('notifications::notifications.role_not_found')]);
         }
 
-        $service = app(NotificationService::class);
-        $audience = $request->input('audience');
-        $type = $request->input('type', 'info');
-
-        if ($audience === 'role') {
-            $count = $service->sendToRole(
-                roleSlug: $this->getRoleSlug($request->input('role_id')),
-                title: $request->input('title'),
-                message: $request->input('message'),
-                type: $type,
-                actionUrl: $request->input('action_url'),
-                actionText: $request->input('action_text'),
+        $count = $role !== null
+            ? $this->service->sendToRole(
+                roleSlug: (string) $role->slug,
+                title: $data['title'],
+                message: $data['message'],
+                type: $data['type'] ?? 'info',
+                actionUrl: $data['action_url'] ?? null,
+                actionText: $data['action_text'] ?? null,
+                sendEmail: (bool) ($data['send_email'] ?? false),
+            )
+            : $this->service->sendToAll(
+                title: $data['title'],
+                message: $data['message'],
+                type: $data['type'] ?? 'info',
+                actionUrl: $data['action_url'] ?? null,
+                actionText: $data['action_text'] ?? null,
+                sendEmail: (bool) ($data['send_email'] ?? false),
             );
-        } else {
-            $count = $service->sendToAll(
-                title: $request->input('title'),
-                message: $request->input('message'),
-                type: $type,
-                actionUrl: $request->input('action_url'),
-                actionText: $request->input('action_text'),
-                sendEmail: (bool) $request->input('send_email', false),
-            );
-        }
 
-        $roleName = $audience === 'role'
-            ? $this->getRoleName($request->input('role_id'))
-            : 'all';
-
-        return redirect()->route('notifications.send.create')
-            ->with('success', "Notification sent to {$count} user(s) ({$roleName}).");
+        return redirect()->route('notifications.send.create')->with(
+            'success',
+            __('notifications::notifications.sent_to', [
+                'count'    => $count,
+                'audience' => $role !== null ? $role->name : __('notifications::notifications.audience_all'),
+            ]),
+        );
     }
 
-    protected function getRoleSlug(int $roleId): string
+    protected function findRole(?int $roleId): ?object
     {
         $roleModel = config('notifications.role_model', 'App\\Models\\Role');
 
-        return $roleModel::find($roleId)?->slug ?? 'user';
-    }
+        if ($roleId === null || !class_exists($roleModel)) {
+            return null;
+        }
 
-    protected function getRoleName(int $roleId): string
-    {
-        $roleModel = config('notifications.role_model', 'App\\Models\\Role');
-
-        return $roleModel::find($roleId)?->name ?? 'Unknown';
+        return $roleModel::find($roleId);
     }
 }

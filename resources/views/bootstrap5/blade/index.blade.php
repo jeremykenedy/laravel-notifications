@@ -24,12 +24,12 @@
                     </form>
                     <form method="POST" action="{{ route('notifications.archive-all') }}" class="d-inline">
                         @csrf
-                        <button type="submit" class="btn btn-outline-secondary btn-sm"><i class="bi bi-archive me-1"></i>Archive All</button>
+                        <button type="submit" class="btn btn-outline-secondary btn-sm"><i class="bi bi-archive me-1"></i>{{ __('notifications::notifications.archive_all') }}</button>
                     </form>
                 @endif
                 <form method="POST" action="{{ route('notifications.destroy-all') }}" id="delete-all-notifs" class="d-inline">
                     @csrf @method('DELETE')
-                    <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteAllModal"><i class="bi bi-trash me-1"></i>Delete All</button>
+                    <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteAllModal"><i class="bi bi-trash me-1"></i>{{ __('notifications::notifications.delete_all') }}</button>
                 </form>
             </div>
         @endif
@@ -40,11 +40,11 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <ul class="nav nav-pills nav-sm">
             <li class="nav-item">
-                <a href="{{ route('notifications.index') }}" class="nav-link py-1 px-3 {{ !$showArchived ? 'active' : '' }}"><i class="bi bi-inbox me-1"></i>Inbox</a>
+                <a href="{{ route('notifications.index') }}" class="nav-link py-1 px-3 {{ !$showArchived ? 'active' : '' }}"><i class="bi bi-inbox me-1"></i>{{ __('notifications::notifications.inbox') }}</a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('notifications.index', ['archived' => 1]) }}" class="nav-link py-1 px-3 {{ $showArchived ? 'active' : '' }}">
-                    <i class="bi bi-archive me-1"></i>Archived
+                    <i class="bi bi-archive me-1"></i>{{ __('notifications::notifications.archived') }}
                     @if($archivedCount > 0)
                         <span class="badge bg-secondary ms-1">{{ $archivedCount }}</span>
                     @endif
@@ -53,7 +53,7 @@
         </ul>
         <div class="input-group input-group-sm" style="max-width: 200px;" x-data="{ search: '' }">
             <span class="input-group-text"><i class="bi bi-search"></i></span>
-            <input type="text" class="form-control" placeholder="Filter..." x-model="search" id="notifSearch">
+            <input type="text" class="form-control" placeholder="{{ __('notifications::notifications.filter') }}" x-model="search" id="notifSearch">
         </div>
     </div>
     @endif
@@ -61,7 +61,7 @@
     @if(config('notifications.flash_messages', false) && session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ __('notifications::notifications.close') }}"></button>
         </div>
     @endif
 
@@ -70,11 +70,11 @@
             <div class="card-body text-center py-5">
                 @if($showArchived)
                     <i class="bi bi-archive display-4 text-muted d-block mb-3"></i>
-                    <h5>No archived notifications</h5>
-                    <p class="text-muted mb-0">Archived notifications will appear here.</p>
+                    <h5>{{ __('notifications::notifications.no_archived') }}</h5>
+                    <p class="text-muted mb-0">{{ __('notifications::notifications.no_archived_hint') }}</p>
                 @else
                     <i class="bi bi-bell display-4 text-muted d-block mb-3"></i>
-                    <h5>All caught up</h5>
+                    <h5>{{ __('notifications::notifications.all_caught_up') }}</h5>
                     <p class="text-muted mb-0">{{ __('notifications::notifications.no_notifications') }}</p>
                 @endif
             </div>
@@ -117,13 +117,13 @@
                             @if($showArchived)
                                 <form method="POST" action="{{ route('notifications.unarchive', $notification->id) }}" class="d-inline">
                                     @csrf
-                                    <button type="submit" class="btn btn-outline-primary btn-sm" title="Restore" data-bs-toggle="tooltip"><i class="bi bi-arrow-counterclockwise"></i></button>
+                                    <button type="submit" class="btn btn-outline-primary btn-sm" title="{{ __('notifications::notifications.unarchive') }}" data-bs-toggle="tooltip"><i class="bi bi-arrow-counterclockwise"></i></button>
                                 </form>
                             @else
                                 @if($notification->read_at)
                                     <form method="POST" action="{{ route('notifications.unread', $notification->id) }}" class="d-inline">
                                         @csrf
-                                        <button type="submit" class="btn btn-outline-warning btn-sm" title="Mark as unread" data-bs-toggle="tooltip"><i class="bi bi-envelope"></i></button>
+                                        <button type="submit" class="btn btn-outline-warning btn-sm" title="{{ __('notifications::notifications.mark_unread') }}" data-bs-toggle="tooltip"><i class="bi bi-envelope"></i></button>
                                     </form>
                                 @else
                                     <form method="POST" action="{{ route('notifications.read', $notification->id) }}" class="d-inline">
@@ -133,7 +133,7 @@
                                 @endif
                                 <form method="POST" action="{{ route('notifications.archive', $notification->id) }}" class="d-inline">
                                     @csrf
-                                    <button type="submit" class="btn btn-outline-secondary btn-sm" title="Archive" data-bs-toggle="tooltip"><i class="bi bi-archive"></i></button>
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm" title="{{ __('notifications::notifications.archive') }}" data-bs-toggle="tooltip"><i class="bi bi-archive"></i></button>
                                 </form>
                             @endif
                             <form method="POST" action="{{ route('notifications.destroy', $notification->id) }}" id="delete-notif-{{ $notification->id }}" class="d-inline">
@@ -155,9 +155,9 @@
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header"><h5 class="modal-title">Delete Notification</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-                <div class="modal-body"><p>Are you sure you want to permanently delete this notification?</p></div>
-                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-danger" id="deleteModalConfirm">Delete</button></div>
+                <div class="modal-header"><h5 class="modal-title">{{ __('notifications::notifications.confirm_delete_title') }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('notifications::notifications.close') }}"></button></div>
+                <div class="modal-body"><p>{{ __('notifications::notifications.confirm_delete_body') }}</p></div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('notifications::notifications.cancel') }}</button><button type="button" class="btn btn-danger" id="deleteModalConfirm">{{ __('notifications::notifications.delete') }}</button></div>
             </div>
         </div>
     </div>
@@ -166,9 +166,9 @@
     <div class="modal fade" id="deleteAllModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header"><h5 class="modal-title">Delete All Notifications</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-                <div class="modal-body"><p>Are you sure you want to delete all notifications? This cannot be undone.</p></div>
-                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-danger" onclick="document.getElementById('delete-all-notifs').submit();">Delete All</button></div>
+                <div class="modal-header"><h5 class="modal-title">{{ __('notifications::notifications.confirm_delete_all_title') }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('notifications::notifications.close') }}"></button></div>
+                <div class="modal-body"><p>{{ __('notifications::notifications.confirm_delete_all_body') }}</p></div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('notifications::notifications.cancel') }}</button><button type="button" class="btn btn-danger" onclick="document.getElementById('delete-all-notifs').submit();">{{ __('notifications::notifications.delete_all') }}</button></div>
             </div>
         </div>
     </div>

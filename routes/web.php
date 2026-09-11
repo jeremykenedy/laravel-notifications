@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Jeremykenedy\LaravelNotifications\Http\Controllers\NotificationController;
+use Jeremykenedy\LaravelNotifications\Http\Controllers\SendNotificationController;
 
 Route::group([
     'prefix'     => config('notifications.routes.prefix', 'notifications'),
@@ -25,7 +26,7 @@ if (config('notifications.send.enabled', true)) {
         'prefix'     => config('notifications.routes.prefix', 'notifications').'/send',
         'middleware' => config('notifications.send.middleware', ['web', 'auth', 'level:5']),
     ], function () {
-        Route::get('/', [\Jeremykenedy\LaravelNotifications\Http\Controllers\SendNotificationController::class, 'create'])->name('notifications.send.create');
-        Route::post('/', [\Jeremykenedy\LaravelNotifications\Http\Controllers\SendNotificationController::class, 'send'])->name('notifications.send.store');
+        Route::get('/', [SendNotificationController::class, 'create'])->name('notifications.send.create');
+        Route::post('/', [SendNotificationController::class, 'send'])->name('notifications.send.store');
     });
 }

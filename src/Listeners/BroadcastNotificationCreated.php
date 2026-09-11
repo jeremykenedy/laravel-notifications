@@ -15,7 +15,6 @@ class BroadcastNotificationCreated
             return;
         }
 
-        // Only broadcast for database channel notifications
         if ($event->channel !== 'database') {
             return;
         }
@@ -26,19 +25,26 @@ class BroadcastNotificationCreated
             return;
         }
 
+        $userId = method_exists($notifiable, 'getKey') ? $notifiable->getKey() : ($notifiable->id ?? null);
+
+        if ($userId === null) {
+            return;
+        }
+
         $data = method_exists($event->notification, 'toArray')
             ? $event->notification->toArray($notifiable)
             : [];
 
         try {
             broadcast(new NotificationCreated(
-                userId: $notifiable->id,
+                userId: $userId,
                 title: $data['title'] ?? 'New Notification',
                 message: $data['message'] ?? '',
                 count: $notifiable->unreadNotifications()->count(),
             ));
         } catch (\Throwable $e) {
-            // Silently fail if broadcast driver is unavailable (e.g., testing, no Reverb running)
+            // A missing or unreachable broadcast driver must not fail the notification itself.
+            report($e);
         }
     }
 }

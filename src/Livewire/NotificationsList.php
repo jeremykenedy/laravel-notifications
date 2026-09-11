@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Jeremykenedy\LaravelNotifications\Livewire;
 
 use Illuminate\Support\Facades\Auth;
+use Jeremykenedy\LaravelNotifications\Services\NotificationService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -12,25 +13,35 @@ class NotificationsList extends Component
 {
     use WithPagination;
 
+    protected NotificationService $service;
+
+    public function boot(NotificationService $service): void
+    {
+        $this->service = $service;
+    }
+
     public function markAsRead(string $id): void
     {
-        Auth::user()->notifications()->where('id', $id)->first()?->markAsRead();
+        $this->service->markAsRead(Auth::user(), $id);
     }
 
     public function markAllAsRead(): void
     {
-        Auth::user()->unreadNotifications->markAsRead();
+        $this->service->markAllAsRead(Auth::user());
     }
 
     public function delete(string $id): void
     {
-        Auth::user()->notifications()->where('id', $id)->delete();
+        $this->service->delete(Auth::user(), $id);
     }
 
     public function render()
     {
         return view('notifications::livewire.notifications-list', [
-            'notifications' => Auth::user()->notifications()->paginate(20),
+            'notifications' => $this->service->getActive(
+                Auth::user(),
+                (int) config('notifications.per_page', 20),
+            ),
         ]);
     }
 }

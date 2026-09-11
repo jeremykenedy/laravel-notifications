@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Jeremykenedy\LaravelNotifications\Console;
 
 use Illuminate\Console\Command;
-use Jeremykenedy\LaravelUiKit\Console\Concerns\HandlesFrameworkSetup;
+use Jeremykenedy\LaravelNotifications\Console\Concerns\HandlesFrameworkSetup;
+use Jeremykenedy\LaravelNotifications\Support\Frameworks;
 
 class SwitchCommand extends Command
 {
@@ -28,27 +29,35 @@ class SwitchCommand extends Command
             return self::FAILURE;
         }
 
-        if ($css && !in_array($css, ['tailwind', 'bootstrap5', 'bootstrap4'])) {
+        if ($css && !Frameworks::isValidCss($css)) {
             $this->error("Invalid CSS: $css");
 
             return self::FAILURE;
         }
 
-        if ($frontend && !in_array($frontend, ['blade', 'livewire', 'vue', 'react', 'svelte'])) {
+        if ($frontend && !Frameworks::isValidFrontend($frontend)) {
             $this->error("Invalid frontend: $frontend");
 
             return self::FAILURE;
         }
 
+        $written = true;
+
         if ($css) {
-            $this->setCssFramework($css);
+            $written = $this->setCssFramework($css) && $written;
             $this->info("Laravel Notifications CSS switched to: $css");
         }
 
         if ($frontend) {
-            $this->setFrontendFramework($frontend);
+            $written = $this->setFrontendFramework($frontend) && $written;
             $this->info("Laravel Notifications frontend switched to: $frontend");
         }
+
+        if (!$written) {
+            $this->warn('No writable .env file was found. The change applies to this process only.');
+        }
+
+        $this->clearCachedConfig();
 
         return self::SUCCESS;
     }
