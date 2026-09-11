@@ -35,6 +35,31 @@ it('separates active notifications from archived ones', function () {
         ->and($this->service()->archivedCount($user))->toBe(1);
 });
 
+it('returns only notifications that are unread and not archived', function () {
+    $user = $this->makeUser();
+    $read = $this->notify($user, 'Read');
+    $archived = $this->notify($user, 'Archived but unread');
+    $this->notify($user, 'Plain unread');
+
+    $this->service()->markAsRead($user, $read->id);
+    $archived->update(['archived_at' => now()]);
+
+    $unread = $this->service()->getUnread($user);
+
+    expect($unread->total())->toBe(1)
+        ->and($unread->first()->data['title'])->toBe('Plain unread');
+});
+
+it('paginates unread notifications using the page size it is given', function () {
+    $user = $this->makeUser();
+    foreach (range(1, 4) as $i) {
+        $this->notify($user, "Unread {$i}");
+    }
+
+    expect($this->service()->getUnread($user, 2)->perPage())->toBe(2)
+        ->and($this->service()->getUnread($user, 2)->total())->toBe(4);
+});
+
 it('marks a single notification as read and back to unread', function () {
     $user = $this->makeUser();
     $notification = $this->notify($user);
