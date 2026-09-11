@@ -24,7 +24,7 @@ All notable changes to this package are documented here.
 
 - A test suite covering the service layer, every web and JSON route, view rendering across all three CSS frameworks, the send GUI, all thirty install and switch combinations, the migration, and broadcasting for both integer and UUID keys.
 - GitHub Actions running tests on PHP 8.2, 8.3 and 8.4 against Laravel 12 and 13, plus Pint and a frontend asset check.
-- `pint.json` and `.styleci.yml`, configured so the two do not fight.
+- `pint.json`, with the rules that conflict with StyleCI disabled so the two do not fight. StyleCI keeps running on its own defaults, which is what it did before.
 - `notifications.api` config block: the JSON endpoints can be disabled, moved, or guarded by something other than Sanctum.
 - `bell.show_count` and `bell.max_count_display` are now read by the bell partial.
 - A `notifications-lang` publish tag.
