@@ -11,14 +11,20 @@
 A complete in-app notification center for Laravel with bell badge, unread count, mark as read, archive, delete, real-time WebSocket broadcasting via Reverb, and a full REST API. Ships Blade views for Tailwind CSS, Bootstrap 5 and Bootstrap 4, plus a Livewire component and Inertia starter components for Vue, React and Svelte.
 
 <p align="center">
-    <a href="https://github.com/jeremykenedy"><img src="https://img.shields.io/github/followers/jeremykenedy?label=Follow&amp;style=social" alt="Follow @jeremykenedy"></a>
-    <a href="https://github.com/jeremykenedy/laravel-notifications/stargazers"><img src="https://img.shields.io/github/stars/jeremykenedy/laravel-notifications?style=social" alt="Star laravel-notifications on GitHub"></a>
-    <a href="https://github.com/sponsors/jeremykenedy"><img src="https://img.shields.io/static/v1?label=Sponsor&amp;message=%E2%9D%A4&amp;logo=GitHub&amp;color=%23fe8e86" alt="Sponsor me on GitHub"></a>
+    
+    
+    
 <a href="https://packagist.org/packages/jeremykenedy/laravel-notifications"><img src="https://poser.pugx.org/jeremykenedy/laravel-notifications/d/total.svg" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/jeremykenedy/laravel-notifications"><img src="https://poser.pugx.org/jeremykenedy/laravel-notifications/v/stable.svg" alt="Latest Stable Version"></a>
 <a href="https://github.com/jeremykenedy/laravel-notifications/actions/workflows/tests.yml"><img src="https://github.com/jeremykenedy/laravel-notifications/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
 <a href="https://github.styleci.io/repos/1194862898?branch=main"><img src="https://github.styleci.io/repos/1194862898/shield?branch=main" alt="StyleCI"></a>
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+</p>
+
+<p align="center">
+    <a href="https://github.com/jeremykenedy"><img src="https://img.shields.io/github/followers/jeremykenedy?label=Follow&amp;style=social" alt="Follow @jeremykenedy"></a>
+    <a href="https://github.com/jeremykenedy/laravel-notifications/stargazers"><img src="https://img.shields.io/github/stars/jeremykenedy/laravel-notifications?style=social" alt="Star laravel-notifications on GitHub"></a>
+    <a href="https://github.com/sponsors/jeremykenedy"><img src="https://img.shields.io/static/v1?label=Sponsor&amp;message=%E2%9D%A4&amp;logo=GitHub&amp;color=%23fe8e86" alt="Sponsor me on GitHub"></a>
 </p>
 
 #### Table of Contents
