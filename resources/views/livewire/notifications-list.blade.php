@@ -1,4 +1,5 @@
 <div>
+    @include('notifications::partials.colors')
     <div class="container mx-auto max-w-3xl px-4 py-8">
         <div class="flex items-center justify-between mb-6">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ __('notifications::notifications.notifications') }}</h1>
@@ -9,7 +10,13 @@
 
         <ul class="space-y-2 list-none p-0 m-0">
             @forelse($notifications as $notification)
-                <li class="p-4 rounded-lg border {{ $notification->read_at ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50' : 'border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20' }}">
+                @php
+                    $nType = in_array($notification->data['type'] ?? 'info', \Jeremykenedy\LaravelNotifications\Support\Colors::TYPES, true)
+                        ? $notification->data['type']
+                        : 'info';
+                    $accent = $notification->read_at ? 'read' : $nType;
+                @endphp
+                <li class="p-4 rounded-lg border" style="background-color: var(--notifications-{{ $accent }}-row); border-color: var(--notifications-{{ $accent }}-border);">
                     <div class="flex items-start justify-between gap-4">
                         <div class="min-w-0">
                             @if(isset($notification->data['title']))

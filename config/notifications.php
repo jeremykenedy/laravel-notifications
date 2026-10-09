@@ -19,6 +19,55 @@ return [
 
     'per_page' => env('NOTIFICATIONS_PER_PAGE', 20),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Colors
+    |--------------------------------------------------------------------------
+    | One hex colour per notification type, plus the accents used for unread
+    | and read rows and the bell badge. Every shade a view needs is derived
+    | from these, so a single value drives the icon, its background, the row
+    | tint and the border.
+    |
+    | These are the shipped defaults. When the settings page is enabled and the
+    | settings table exists, values saved there are overlaid on top of this at
+    | boot and the form's reset control restores whatever is written here.
+    |
+    */
+
+    'colors' => [
+        'info'    => '#2563eb',
+        'success' => '#16a34a',
+        'warning' => '#d97706',
+        'danger'  => '#dc2626',
+        'system'  => '#7c3aed',
+        'unread'  => '#2563eb',
+        'read'    => '#6b7280',
+        'badge'   => '#ef4444',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Colour Settings Page
+    |--------------------------------------------------------------------------
+    | The settings page lets people change the colours above from the browser
+    | and stores them in the settings table. Turn `enabled` off to keep the
+    | config file as the only source of colours.
+    |
+    | `blade_extended` is the layout the published page extends. Point it at
+    | your own layout so the page sits inside your application's chrome.
+    |
+    */
+
+    'settings' => [
+        'enabled'        => env('NOTIFICATIONS_SETTINGS_ENABLED', true),
+        'route_enabled'  => env('NOTIFICATIONS_SETTINGS_ROUTE_ENABLED', true),
+        'prefix'         => 'notifications/settings',
+        'middleware'     => ['web', 'auth'],
+        'blade_extended' => 'layouts.app',
+        'table'          => 'notification_settings',
+        'connection'     => null,
+    ],
+
     'bell' => [
         'show_count'        => true,
         'max_count_display' => 99,
