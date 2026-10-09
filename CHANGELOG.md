@@ -16,6 +16,7 @@ All notable changes to this package are documented here.
 
 ### Changed
 
+- The bell badge on all three CSS frameworks and the Livewire list now read the configured colours. The bell partial includes the colour variables itself, so it works in a navbar without the notification center page, and the variables are emitted once per page however many partials include them.
 - Bootstrap 5 and Bootstrap 4 now colour notifications by type. Previously only Tailwind did, and the Bootstrap views used one fixed accent for every type.
 - The settings routes are registered before the web routes, because `notifications/settings` would otherwise be captured by the `notifications/{id}` routes and a reset would delete a notification instead.
 - Tints are computed in PHP rather than with `color-mix()`, so output does not depend on a CSS feature being available.

@@ -68,3 +68,48 @@ it('can be included on any page without the settings routes being hit', function
     expect($colors)->toContain('--notifications-info:')
         ->and($colors)->toContain('<style>');
 });
+
+it('colours the bell badge from the saved colour for every framework', function (string $css) {
+    $this->usingCssFramework($css);
+    app(Settings::class)->save(['badge' => '#0a0b0c']);
+
+    $content = $this->actingAs($this->makeUser())
+        ->view('notifications::partials.bell')
+        ->__toString();
+
+    expect($content)->toContain('--notifications-badge: #0a0b0c;')
+        ->and($content)->toContain('var(--notifications-badge)')
+        ->and($content)->toContain('var(--notifications-badge-on)')
+        ->and($content)->not->toContain('bg-red-500')
+        ->and($content)->not->toContain('bg-danger')
+        ->and($content)->not->toContain('badge-danger');
+})->with(Frameworks::CSS);
+
+it('emits the colour variables once even when the bell and the page both include them', function () {
+    $user = $this->makeUser();
+    $this->actingAs($user);
+
+    $html = view('notifications::partials.colors')->render().view('notifications::partials.colors')->render();
+
+    expect(substr_count($html, '--notifications-info:'))->toBe(2);
+
+    $page = view('notifications::index', [
+        'notifications' => $this->service()->getActive($user),
+        'unreadCount'   => 0, 'archivedCount' => 0, 'showArchived' => false, 'totalCount' => 0,
+    ])->render();
+
+    expect(substr_count($page, '--notifications-info:'))->toBe(1);
+});
+
+it('colours the livewire list from the saved colours', function () {
+    app(Settings::class)->save(['danger' => '#0a0b0c']);
+    $user = $this->makeUser();
+    $this->service()->send($user, 'Failed', 'Card declined.', 'danger');
+
+    $html = view('notifications::livewire.notifications-list', [
+        'notifications' => $this->service()->getActive($user),
+    ])->render();
+
+    expect($html)->toContain('var(--notifications-danger-row)')
+        ->and($html)->toContain('--notifications-danger: #0a0b0c;');
+});

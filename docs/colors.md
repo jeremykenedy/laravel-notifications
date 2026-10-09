@@ -102,6 +102,18 @@ if that is not what you want.
 whether the page exists. Turning the routes off leaves the rest of the package
 untouched.
 
+## Where the colours apply
+
+| Surface | Reads |
+| :--- | :--- |
+| Notification center, all three CSS frameworks | The type colour, or the unread and read accents |
+| Bell badge, all three CSS frameworks | `badge`, with a readable foreground |
+| Livewire list | The type colour, or the read accent |
+| Vue, React and Svelte starter components | Nothing. They are starting points you style yourself |
+
+The bell partial includes the colour variables itself, so it picks them up in a
+navbar on pages that never render the notification center.
+
 ## Putting the picker on your own page
 
 The picker is a self contained Blade partial. Include it anywhere:
