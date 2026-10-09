@@ -488,29 +488,36 @@ composer lint:test   # check style without writing
 
 ## Upgrading
 
-### To 2.1 from 2.0
+Version 3.0.0 contains exactly the code of 2.1.0. It is the same release published under a major version number, because 2.1.0 added a database table, new routes and new config, and turned on by default a settings page that any signed in user can use. If you are already on 2.1.0 there is nothing to do.
 
-Run `php artisan migrate` to create the `notification_settings` table. Without
-it everything keeps working on the colours in the config file, and the settings
-page explains that saving needs the migration rather than failing.
+### To 3.0 from 2.0
 
-Notification type colours now come from `config('notifications.colors')` through
-CSS custom properties instead of hardcoded Tailwind and Bootstrap classes. The
-shipped defaults are close to the previous colours, so the interface looks much
-the same. If you published the views, your copies are untouched and keep their
-old colours until you publish again.
+```bash
+composer update jeremykenedy/laravel-notifications
+php artisan migrate
+```
 
+Run `php artisan migrate` to create the `notification_settings` table. Without it everything keeps working on the colours in the config file, and the settings page says saving needs the migration rather than failing.
 
-Nothing in the public API was renamed or removed, and no route name changed. Three behaviours did change:
+Set `settings.middleware` to something that authorizes your administrators, or turn the page off with `settings.route_enabled`. By default it is `['web', 'auth']`, which lets any signed in user change the colours for everyone.
 
-- `notifications:install` and `notifications:switch` now write `NOTIFICATIONS_CSS_FRAMEWORK` and `NOTIFICATIONS_FRONTEND` rather than `UI_KIT_CSS` and `UI_KIT_FRONTEND`. Applications that set the `UI_KIT_*` variables keep working, because those are still read as the fallback.
-- The Livewire component now lists the inbox rather than every notification, matching the Blade view.
+If you cache config, run `php artisan config:clear` and then `php artisan config:cache` again. You do not need to republish the config, because Laravel merges the package config at the top level and picks up the new keys.
+
+Notification colours now come from `config('notifications.colors')` through CSS custom properties instead of hardcoded Tailwind and Bootstrap classes. The shipped defaults are close to the previous colours. Bootstrap 5 and Bootstrap 4 now tint rows by notification type, which they did not before. If you published the views, your copies keep their old colours until you publish again.
+
+### To 3.0 from 1.x
+
+The 3.0 steps above apply, and so do these changes that arrived with 2.0.
+
+- `notifications:install` and `notifications:switch` write `NOTIFICATIONS_CSS_FRAMEWORK` and `NOTIFICATIONS_FRONTEND` rather than `UI_KIT_CSS` and `UI_KIT_FRONTEND`. Applications that set the `UI_KIT_*` variables keep working, because those are still read as the fallback.
+- The Livewire component lists the inbox rather than every notification, matching the Blade view.
 - Sending to a role that does not exist returns a validation error instead of silently sending to the `user` role.
-- `archiveAll` now marks unread notifications as read, matching what archiving one at a time already did. Unarchiving such a notification brings it back read rather than unread.
-- `sendToRole` gained an optional trailing `$sendEmail` argument, so the send form's email checkbox now applies to role audiences as well as to all users. Existing calls are unaffected.
-- The migration creates the `notifications` table when the application has none, rather than skipping and leaving `archived_at` behind for good.
+- `archiveAll` marks unread notifications as read, matching what archiving one at a time already did. Unarchiving such a notification brings it back read rather than unread.
+- `sendToRole` gained an optional trailing `$sendEmail` argument, so the send form's email checkbox applies to role audiences as well as to all users. Existing calls are unaffected.
+- The `archived_at` migration creates the `notifications` table when the application has none, rather than skipping and leaving the column behind for good.
+- The send form no longer lets a rejected `audience` value break out of an Alpine expression.
 
-The `enabled`, `auto_mark_read_on_view` and `confirm_style` config keys were removed. None of them were ever read by any code in the package, so removing them changes no behaviour.
+The `enabled`, `auto_mark_read_on_view` and `confirm_style` config keys were removed. None of them were ever read by any code in the package, so removing them changes no behaviour. Nothing in the public API was renamed or removed, and no route name changed.
 
 ## License
 
