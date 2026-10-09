@@ -2,6 +2,18 @@
 
 All notable changes to this package are documented here.
 
+## 3.0.0 - 2026-10-09
+
+This release contains exactly the code of 2.1.0, published under a major version number.
+
+2.1.0 added a database table, new routes and new config, and turned on by default a settings page that any signed in user can use to change the notification colours for everyone. That is a change to the security posture and the schema of an existing installation, which is a contract change and not a compatible feature, so it is released as 3.0.0. The 2.1.0 tag stays where it is.
+
+### Upgrading
+
+- Run `php artisan migrate` to create the `notification_settings` table.
+- Set `settings.middleware` to something that authorizes your administrators, or set `settings.route_enabled` to `false`. The default of `['web', 'auth']` lets any signed in user change the colours.
+- See the Upgrading section of the README for the steps from 2.0 and from 1.x.
+
 ## 2.1.0 - 2026-10-09
 
 ### Added
