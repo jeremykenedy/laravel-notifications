@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Notifications\Console\NotificationTableCommand;
+use Illuminate\Support\Facades\Schema;
 
 it('adds the archived_at column to the notifications table', function () {
     expect(Schema::hasColumn('notifications', 'archived_at'))->toBeTrue();
