@@ -15,6 +15,7 @@ A complete in-app notification center for Laravel with bell badge, unread count,
 <a href="https://packagist.org/packages/jeremykenedy/laravel-notifications"><img src="https://poser.pugx.org/jeremykenedy/laravel-notifications/v/stable.svg" alt="Latest Stable Version"></a>
 <a href="https://github.com/jeremykenedy/laravel-notifications/actions/workflows/tests.yml"><img src="https://github.com/jeremykenedy/laravel-notifications/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
 <a href="https://github.styleci.io/repos/1194862898?branch=main"><img src="https://github.styleci.io/repos/1194862898/shield?branch=main" alt="StyleCI"></a>
+<a href="https://app.codacy.com/gh/jeremykenedy/laravel-notifications/dashboard"><img src="https://app.codacy.com/project/badge/Grade/c2b64a35bbc64af699b0d52e9db7985a" alt="Codacy Grade"></a>
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
 </p>
 
@@ -489,7 +490,7 @@ composer lint:test   # check style without writing
 
 ## Upgrading
 
-Version 3.0.0 contains exactly the code of 2.1.0. It is the same release published under a major version number, because 2.1.0 added a database table, new routes and new config, and turned on by default a settings page that any signed in user can use. If you are already on 2.1.0 there is nothing to do.
+Version 3.0.0 is the major release of everything that arrived in 2.1.0. 2.1.0 added a database table, new routes and new config, and turned on by default a settings page that any signed in user can use, which changes the schema and security posture of an existing installation, so it is released as a major version. On top of 2.1.0 it only adds internal refactors that do not change behavior, and static analysis configuration. If you are already on 2.1.0 the only step is to review `settings.middleware`.
 
 ### To 3.0 from 2.0
 
