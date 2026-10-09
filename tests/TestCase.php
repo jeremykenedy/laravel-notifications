@@ -156,6 +156,7 @@ abstract class TestCase extends OrchestraTestCase
         $this->createNotificationsTable();
 
         $this->packageMigration()->up();
+        $this->settingsMigration()->up();
     }
 
     /**
@@ -172,6 +173,11 @@ abstract class TestCase extends OrchestraTestCase
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
+    }
+
+    protected function settingsMigration(): object
+    {
+        return require __DIR__.'/../database/migrations/2026_10_09_000001_create_notification_settings_table.php';
     }
 
     protected function packageMigration(): object

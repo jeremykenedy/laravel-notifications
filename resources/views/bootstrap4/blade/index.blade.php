@@ -5,6 +5,7 @@
 @endsection
 
 @push('template_linked_css')
+@include('notifications::partials.colors')
 <style>
     @keyframes pulse-dot-bs4 { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(1.4)} }
     .animate-pulse-dot-bs4 { animation: pulse-dot-bs4 2s ease-in-out infinite; }
@@ -82,19 +83,28 @@
     @else
         <div class="list-group">
             @foreach($notifications as $notification)
-                <div class="list-group-item notif-item {{ $notification->read_at ? '' : 'list-group-item-light border-left border-primary' }}" style="{{ $notification->read_at ? '' : 'border-left-width: 3px !important;' }}" data-search="{{ strtolower(($notification->data['title'] ?? '') . ' ' . ($notification->data['message'] ?? '')) }}">
+                @php
+                    // Only a known type may reach the CSS variable name below.
+                    $nType = in_array($notification->data['type'] ?? 'info', \Jeremykenedy\LaravelNotifications\Support\Colors::TYPES, true)
+                        ? $notification->data['type']
+                        : 'info';
+                    $accent = $notification->read_at ? 'read' : $nType;
+                @endphp
+                <div class="list-group-item notif-item"
+                    style="background-color: var(--notifications-{{ $accent }}-row); border-left: 3px solid var(--notifications-{{ $accent }});"
+                    data-search="{{ strtolower(($notification->data['title'] ?? '') . ' ' . ($notification->data['message'] ?? '')) }}">
                     <div class="d-flex justify-content-between align-items-start">
                         {{-- Icon --}}
                         <div class="mr-3 position-relative" style="width:36px;height:36px;flex-shrink:0;">
-                            <span class="d-inline-flex align-items-center justify-content-center rounded-circle {{ $notification->read_at ? 'bg-light' : 'bg-primary-light' }}" style="width:36px;height:36px;{{ $notification->read_at ? '' : 'background:rgba(0,123,255,.1);' }}">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width:36px;height:36px;background-color: var(--notifications-{{ $accent }}-tint); color: var(--notifications-{{ $accent }});">
                                 @if($notification->read_at)
                                     <i class="fa fa-check text-muted"></i>
                                 @else
-                                    <i class="fa fa-bell text-primary"></i>
+                                    <i class="fa fa-bell"></i>
                                 @endif
                             </span>
                             @unless($notification->read_at)
-                                <span class="position-absolute rounded-circle bg-success border border-white animate-pulse-dot-bs4" style="width:10px;height:10px;top:-2px;right:-2px;"></span>
+                                <span class="position-absolute rounded-circle border border-white animate-pulse-dot-bs4" style="width:10px;height:10px;top:-2px;right:-2px;background-color: var(--notifications-unread);"></span>
                             @endunless
                         </div>
 

@@ -1,6 +1,7 @@
 <?php
 
 use Jeremykenedy\LaravelNotifications\Services\NotificationService;
+use Jeremykenedy\LaravelNotifications\Support\Colors;
 
 it('loads the package defaults', function () {
     expect(config('notifications.per_page'))->toBe(20)
@@ -51,9 +52,10 @@ it('registers the package translations', function () {
 it('has a translation for every key the views ask for', function () {
     $translations = require __DIR__.'/../../resources/lang/en/notifications.php';
 
-    // The send view builds its type labels by concatenation, so the scan below
-    // picks up the bare prefix rather than the five real keys.
-    $dynamicPrefixes = ['type_'];
+    // The send view and the colour settings widget build their labels by
+    // concatenation, so the scan below picks up the bare prefixes rather than
+    // the real keys. Both are asserted explicitly in their own tests.
+    $dynamicPrefixes = ['type_', 'color_'];
     $used = [];
 
     $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../../resources/views'));
@@ -68,6 +70,13 @@ it('has a translation for every key the views ask for', function () {
     $missing = array_diff(array_unique($used), array_keys($translations), $dynamicPrefixes);
 
     expect(array_values($missing))->toBeEmpty();
+});
+
+it('has a label and a hint for every configurable colour', function () {
+    foreach (Colors::keys() as $key) {
+        expect(__("notifications::notifications.color_{$key}"))->not->toBe("notifications::notifications.color_{$key}")
+            ->and(__("notifications::notifications.color_{$key}_hint"))->not->toBe("notifications::notifications.color_{$key}_hint");
+    }
 });
 
 it('has a label for every notification type the send form offers', function () {

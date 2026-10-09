@@ -29,6 +29,7 @@ A complete in-app notification center for Laravel with bell badge, unread count,
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Configuration](#configuration)
+- [Notification Colors](#notification-colors)
 - [Usage](#usage)
   - [Notification Center Page](#notification-center-page)
   - [Bell Badge with Unread Count](#bell-badge-with-unread-count)
@@ -45,6 +46,7 @@ A complete in-app notification center for Laravel with bell badge, unread count,
 - [NotificationService API](#notificationservice-api)
 - [Artisan Commands](#artisan-commands)
 - [Translations](#translations)
+- [Documentation](#documentation)
 - [Testing](#testing)
 - [Upgrading](#upgrading)
 - [License](#license)
@@ -112,6 +114,14 @@ php artisan vendor:publish --tag=notifications-config
 | `api.enabled` | `true` | Register the JSON endpoints. Requires `routes.enabled`. |
 | `api.prefix` | `api/notifications` | URI prefix for the JSON endpoints. |
 | `api.middleware` | `['api', 'auth:sanctum']` | Middleware for the JSON endpoints. |
+| `colors.*` | see below | A hex colour per notification type plus the unread, read and badge accents. |
+| `settings.enabled` | `true` | Apply colours saved from the settings page. Off means the config file wins. |
+| `settings.route_enabled` | `true` | Register the colour settings page. |
+| `settings.prefix` | `notifications/settings` | URI prefix for the settings page. |
+| `settings.middleware` | `['web', 'auth']` | Middleware for the settings page. |
+| `settings.blade_extended` | `layouts.app` | The layout the settings page extends. |
+| `settings.table` | `notification_settings` | Table the saved colours live in. |
+| `settings.connection` | `null` | Connection for that table. `null` uses the default. |
 | `flash_messages` | `false` | Show inline success alerts. Leave off if you use a toast package. |
 | `send.enabled` | `true` | Register the send notification GUI. |
 | `send.middleware` | `['web', 'auth', 'verified', 'level:5']` | Middleware for the send GUI. |
@@ -120,6 +130,79 @@ php artisan vendor:publish --tag=notifications-config
 | `broadcast.enabled` | `true` | Broadcast a `NotificationCreated` event on every database notification. |
 
 Sanctum is not a dependency of this package. If your API is guarded some other way, change `api.middleware`.
+
+## Notification Colors
+
+Every colour a notification is drawn with comes from one place, so changing a
+single value recolours the icon, its background, the row tint and the border
+together. Set them in config:
+
+```php
+// config/notifications.php
+'colors' => [
+    'info'    => '#2563eb',
+    'success' => '#16a34a',
+    'warning' => '#d97706',
+    'danger'  => '#dc2626',
+    'system'  => '#7c3aed',
+    'unread'  => '#2563eb',
+    'read'    => '#6b7280',
+    'badge'   => '#ef4444',
+],
+```
+
+That is all you need when colours are fixed for your application.
+
+### Letting people change them in the browser
+
+Run the migration so colours have somewhere to live, then visit
+`/notifications/settings`:
+
+```bash
+php artisan migrate
+```
+
+The page gives each colour a native picker and a hex field, a reset control on
+any value that differs from the default, and a live preview of each notification
+type that updates as you type, before anything is saved. Saved colours go into
+one row of the `notification_settings` table and are overlaid onto the config at
+boot, so everything downstream keeps reading `config('notifications.colors.*')`.
+
+The page extends the layout you name, so it sits inside your own navigation:
+
+```php
+'settings' => [
+    'blade_extended' => 'layouts.app',
+    'middleware'     => ['web', 'auth', 'can:manage-notifications'],
+],
+```
+
+The shipped middleware is `['web', 'auth']`, so add your own authorization if
+any signed in user should not be able to recolour notifications.
+
+### Putting the picker on a page of your own
+
+```blade
+@include('notifications::partials.color-settings')
+```
+
+The picker is self contained. It brings its own markup, styles and behaviour, so
+it looks the same on Tailwind, Bootstrap 5 and Bootstrap 4 wherever you put it.
+
+### Using the colours in your own views
+
+```blade
+@include('notifications::partials.colors')
+```
+
+That publishes the colours as CSS custom properties, five per colour, so your
+own markup can match:
+
+```html
+<span style="background-color: var(--notifications-success-tint); color: var(--notifications-success);">Done</span>
+```
+
+Full reference in [docs/colors.md](docs/colors.md).
 
 ## Usage
 
@@ -298,6 +381,9 @@ Turn it off with `broadcast.enabled`. A broadcast failure is reported to your ex
 | `DELETE` | `/notifications` | `notifications.destroy-all` | Delete all |
 | `GET` | `/notifications/send` | `notifications.send.create` | Send notification GUI |
 | `POST` | `/notifications/send` | `notifications.send.store` | Send a notification |
+| `GET` | `/notifications/settings` | `notifications.settings.edit` | Colour settings page |
+| `PUT` | `/notifications/settings` | `notifications.settings.update` | Save colours |
+| `DELETE` | `/notifications/settings` | `notifications.settings.reset` | Restore the shipped colours |
 
 ## API Routes
 
@@ -369,6 +455,12 @@ Every string in every view comes from `notifications::notifications`. Publish th
 php artisan vendor:publish --tag=notifications-lang
 ```
 
+## Documentation
+
+- [Notification Colors](docs/colors.md) - setting the colours in config, the
+  settings page, the includable picker, and the CSS custom properties the views
+  read.
+
 ## Testing
 
 ```bash
@@ -385,6 +477,9 @@ The suite runs on Orchestra Testbench against an in memory SQLite database and r
 - The migration, including a missing `notifications` table and being run twice
 - Broadcasting, including integer and UUID user keys
 - Config defaults, framework resolution and translation coverage
+- Colour validation, the derived tints, and the readable foreground calculation
+- Colour persistence, the config overlay, reset, and the pre migration state
+- The settings page and form in all three CSS frameworks, including authorization
 
 ```bash
 composer lint        # apply Pint
@@ -392,6 +487,19 @@ composer lint:test   # check style without writing
 ```
 
 ## Upgrading
+
+### To 2.1 from 2.0
+
+Run `php artisan migrate` to create the `notification_settings` table. Without
+it everything keeps working on the colours in the config file, and the settings
+page explains that saving needs the migration rather than failing.
+
+Notification type colours now come from `config('notifications.colors')` through
+CSS custom properties instead of hardcoded Tailwind and Bootstrap classes. The
+shipped defaults are close to the previous colours, so the interface looks much
+the same. If you published the views, your copies are untouched and keep their
+old colours until you publish again.
+
 
 Nothing in the public API was renamed or removed, and no route name changed. Three behaviours did change:
 

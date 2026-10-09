@@ -13,6 +13,7 @@ use Jeremykenedy\LaravelNotifications\Listeners\BroadcastNotificationCreated;
 use Jeremykenedy\LaravelNotifications\Livewire\NotificationsList;
 use Jeremykenedy\LaravelNotifications\Services\NotificationService;
 use Jeremykenedy\LaravelNotifications\Support\Frameworks;
+use Jeremykenedy\LaravelNotifications\Support\Settings;
 use Livewire\Livewire;
 
 class NotificationServiceProvider extends ServiceProvider
@@ -21,6 +22,7 @@ class NotificationServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/notifications.php', 'notifications');
         $this->app->singleton(NotificationService::class);
+        $this->app->singleton(Settings::class);
     }
 
     public function boot(): void
@@ -31,12 +33,22 @@ class NotificationServiceProvider extends ServiceProvider
 
         $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
 
+        // Colours saved from the settings page are overlaid onto the config
+        // here, so every view downstream just reads config('notifications.*').
+        $this->app->make(Settings::class)->load();
+
         $this->registerCommands();
         $this->registerPublishing();
 
         // routes.enabled is the master switch it has always been, so turning it
         // off still takes the JSON endpoints with it.
         if (config('notifications.routes.enabled', true)) {
+            // Settings go first: notifications/settings would otherwise be
+            // swallowed by the notifications/{id} routes in web.php.
+            if (config('notifications.settings.route_enabled', true)) {
+                $this->loadRoutesFrom(__DIR__.'/../../routes/settings.php');
+            }
+
             $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
 
             if (config('notifications.api.enabled', true)) {

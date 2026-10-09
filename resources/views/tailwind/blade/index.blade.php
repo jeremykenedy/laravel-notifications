@@ -5,6 +5,7 @@
 @endsection
 
 @push('template_linked_css')
+@include('notifications::partials.colors')
 <style>
     @keyframes pulse-dot {
         0%, 100% { opacity: 1; transform: scale(1); }
@@ -134,31 +135,29 @@
             @foreach($notifications as $notification)
                 @php
                     $searchText = strtolower(trim(($notification->data['title'] ?? '').' '.($notification->data['message'] ?? '')));
-                    $nType = $notification->data['type'] ?? 'info';
-                    $iconBg = match($nType) {
-                        'success' => 'bg-green-100 dark:bg-green-900/40',
-                        'warning' => 'bg-yellow-100 dark:bg-yellow-900/40',
-                        'danger'  => 'bg-red-100 dark:bg-red-900/40',
-                        'system'  => 'bg-purple-100 dark:bg-purple-900/40',
-                        default   => $notification->read_at ? 'bg-gray-100 dark:bg-gray-700' : 'bg-blue-100 dark:bg-blue-900/40',
-                    };
+                    // Only a known type may reach the CSS variable name below.
+                    $nType = in_array($notification->data['type'] ?? 'info', \Jeremykenedy\LaravelNotifications\Support\Colors::TYPES, true)
+                        ? $notification->data['type']
+                        : 'info';
+                    $accent = $notification->read_at ? 'read' : $nType;
                 @endphp
                 <li
                     x-show="search === '' || @js($searchText).includes(search.toLowerCase())"
                     x-cloak
-                    class="flex items-start gap-4 p-4 rounded-lg border transition-colors {{ $notification->read_at ? 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50' : 'border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20' }}"
+                    class="flex items-start gap-4 p-4 rounded-lg border transition-colors"
+                    style="background-color: var(--notifications-{{ $accent }}-row); border-color: var(--notifications-{{ $accent }}-border);"
                 >
                     {{-- Icon --}}
                     <div class="flex-shrink-0 mt-0.5 relative">
-                        <span class="inline-flex items-center justify-center h-9 w-9 rounded-full {{ $iconBg }}">
+                        <span class="inline-flex items-center justify-center h-9 w-9 rounded-full" style="background-color: var(--notifications-{{ $accent }}-tint); color: var(--notifications-{{ $accent }});">
                             @if($notification->read_at)
-                                <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
                             @else
-                                <svg class="h-4 w-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
                             @endif
                         </span>
                         @unless($notification->read_at)
-                            <span class="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-white dark:border-gray-900 animate-pulse-dot"></span>
+                            <span class="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white dark:border-gray-900 animate-pulse-dot" style="background-color: var(--notifications-unread);"></span>
                             <span class="sr-only">{{ __('notifications::notifications.unread') }}</span>
                         @endunless
                     </div>

@@ -65,6 +65,7 @@ class InstallCommand extends Command
 
         info('notifications installed successfully.');
         info('Run: php artisan migrate && npm run build');
+        info('Colors can be changed at '.config('notifications.settings.prefix', 'notifications/settings').' once migrated.');
 
         return self::SUCCESS;
     }

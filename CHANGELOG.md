@@ -2,6 +2,25 @@
 
 All notable changes to this package are documented here.
 
+## 2.1.0 - 2026-10-09
+
+### Added
+
+- Notification colours are configurable. One hex value per type, plus unread, read and badge accents, drives the icon, its background, the row tint and the border together.
+- A colour settings page at `/notifications/settings` with a native picker and hex field per colour, a reset control on any value that differs from the default, and a live preview of every notification type that updates while you type. The page extends the layout named in `settings.blade_extended` and is guarded by `settings.middleware`.
+- `notifications::partials.color-settings`, a self contained Blade partial that puts the same picker on any page of your own. It brings its own markup, styles and behaviour so it renders the same on all three CSS frameworks.
+- `notifications::partials.colors`, which publishes the colours as CSS custom properties so your own views can match. Five properties per colour: the colour, a 14 percent tint, a 7 percent row wash, a 35 percent border, and a readable black or white foreground computed from WCAG relative luminance.
+- `Support\Colors` and `Support\Settings` for reading and storing colours from PHP.
+- A `notification_settings` table, created by a new migration. Colours saved there are overlaid onto the config at boot, so everything downstream keeps reading `config('notifications.colors.*')`.
+- `docs/colors.md`, linked from a new Documentation section in the README.
+
+### Changed
+
+- Bootstrap 5 and Bootstrap 4 now colour notifications by type. Previously only Tailwind did, and the Bootstrap views used one fixed accent for every type.
+- The settings routes are registered before the web routes, because `notifications/settings` would otherwise be captured by the `notifications/{id}` routes and a reset would delete a notification instead.
+- Tints are computed in PHP rather than with `color-mix()`, so output does not depend on a CSS feature being available.
+- The colour picker follows the host page for dark mode, reading Tailwind's `.dark` class and Bootstrap 5's `data-bs-theme`, rather than the operating system setting.
+
 ## 2.0.0 - 2026-09-11
 
 ### Fixed
