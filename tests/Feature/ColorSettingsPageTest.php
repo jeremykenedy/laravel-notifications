@@ -1,10 +1,10 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Jeremykenedy\LaravelNotifications\Support\Colors;
 use Jeremykenedy\LaravelNotifications\Support\Frameworks;
 use Jeremykenedy\LaravelNotifications\Support\Settings;
-use Illuminate\Http\Request;
 
 it('renders the settings page for every css framework', function (string $css) {
     $this->usingCssFramework($css);
