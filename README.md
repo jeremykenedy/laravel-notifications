@@ -83,10 +83,19 @@ php artisan notifications:install --css=tailwind --frontend=blade
 php artisan migrate
 ```
 
-The package needs Laravel's `notifications` table. If your application does not have one, the package migration creates it, including the `archived_at` column it adds. If you would rather own that migration yourself, generate it before installing the package:
+The package adds an `archived_at` column to Laravel's own `notifications` table, so that table has to exist. Generate it before you migrate, or in the same run, because the package migration is named to sort after it:
 
 ```bash
 php artisan make:notifications-table
+php artisan migrate
+```
+
+The package never creates the `notifications` table itself, because Laravel's own migration would then fail with "table already exists".
+
+If you ran `php artisan migrate` before the table existed, the package migration found nothing to alter and recorded itself as run. Forget that record and migrate again:
+
+```bash
+php artisan tinker --execute="DB::table('migrations')->where('migration', '2099_01_01_000000_add_archived_at_to_notifications_table')->delete();"
 php artisan migrate
 ```
 
@@ -516,7 +525,7 @@ The 3.0 steps above apply, and so do these changes that arrived with 2.0.
 - Sending to a role that does not exist returns a validation error instead of silently sending to the `user` role.
 - `archiveAll` marks unread notifications as read, matching what archiving one at a time already did. Unarchiving such a notification brings it back read rather than unread.
 - `sendToRole` gained an optional trailing `$sendEmail` argument, so the send form's email checkbox applies to role audiences as well as to all users. Existing calls are unaffected.
-- The `archived_at` migration creates the `notifications` table when the application has none, rather than skipping and leaving the column behind for good.
+- The `archived_at` migration is renamed so that it sorts after Laravel's own `create_notifications_table`, which it needs. The old file is kept as a no-op so installs that already ran it stay consistent.
 - The send form no longer lets a rejected `audience` value break out of an Alpine expression.
 
 The `enabled`, `auto_mark_read_on_view` and `confirm_style` config keys were removed. None of them were ever read by any code in the package, so removing them changes no behaviour. Nothing in the public API was renamed or removed, and no route name changed.
