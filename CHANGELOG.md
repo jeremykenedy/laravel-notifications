@@ -29,6 +29,7 @@ The major release of everything in 2.1.0, plus internal refactors and static ana
 
 - Run `php artisan migrate` to create the `notification_settings` table.
 - Set `settings.middleware` to something that authorizes your administrators, or set `settings.route_enabled` to `false`. The default of `['web', 'auth']` lets any signed in user change the colours.
+- If you removed your own `create_notifications_table` migration because 2.0.0, 2.0.1 or 2.1.0 created the table, restore it with `php artisan make:notifications-table`. The package no longer creates the table, so a fresh environment needs Laravel's own migration. Existing databases are unaffected.
 - See the Upgrading section of the README for the steps from 2.0 and from 1.x.
 
 ## 2.1.0 - 2026-10-09
