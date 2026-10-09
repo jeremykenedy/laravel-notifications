@@ -46,15 +46,7 @@ class NotificationService
 
     public function markAsRead(Authenticatable $user, string $notificationId): bool
     {
-        $notification = $user->notifications()->find($notificationId);
-
-        if ($notification) {
-            $notification->markAsRead();
-
-            return true;
-        }
-
-        return false;
+        return $this->withNotification($user, $notificationId, fn ($notification) => $notification->markAsRead());
     }
 
     public function markAllAsRead(Authenticatable $user): int
@@ -69,43 +61,22 @@ class NotificationService
 
     public function markAsUnread(Authenticatable $user, string $notificationId): bool
     {
-        $notification = $user->notifications()->find($notificationId);
-
-        if ($notification) {
-            $notification->update(['read_at' => null]);
-
-            return true;
-        }
-
-        return false;
+        return $this->withNotification($user, $notificationId, fn ($notification) => $notification->update(['read_at' => null]));
     }
 
     // ---- Archive ----
 
     public function archive(Authenticatable $user, string $notificationId): bool
     {
-        $notification = $user->notifications()->find($notificationId);
-
-        if ($notification) {
-            $notification->update(['archived_at' => now(), 'read_at' => $notification->read_at ?? now()]);
-
-            return true;
-        }
-
-        return false;
+        return $this->withNotification($user, $notificationId, fn ($notification) => $notification->update([
+            'archived_at' => now(),
+            'read_at'     => $notification->read_at ?? now(),
+        ]));
     }
 
     public function unarchive(Authenticatable $user, string $notificationId): bool
     {
-        $notification = $user->notifications()->find($notificationId);
-
-        if ($notification) {
-            $notification->update(['archived_at' => null]);
-
-            return true;
-        }
-
-        return false;
+        return $this->withNotification($user, $notificationId, fn ($notification) => $notification->update(['archived_at' => null]));
     }
 
     public function archiveAll(Authenticatable $user): int
@@ -119,6 +90,23 @@ class NotificationService
         $user->notifications()->whereNull('archived_at')->update(['archived_at' => now()]);
 
         return $count;
+    }
+
+    /**
+     * Run a change against one of the user's own notifications. Returns false
+     * when it does not exist or belongs to someone else, and never touches it.
+     */
+    protected function withNotification(Authenticatable $user, string $notificationId, callable $change): bool
+    {
+        $notification = $user->notifications()->find($notificationId);
+
+        if (!$notification) {
+            return false;
+        }
+
+        $change($notification);
+
+        return true;
     }
 
     // ---- Delete ----

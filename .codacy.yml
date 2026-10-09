@@ -2,3 +2,7 @@
 exclude_paths:
   - "**/*.blade.php"
   - "art/**"
+engines:
+  lizard:
+    exclude_paths:
+      - "tests/**"

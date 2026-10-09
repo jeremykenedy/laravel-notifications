@@ -21,9 +21,10 @@
         <exclude name="PSR12.Classes.AnonClassDeclaration"/>
     </rule>
 
-    <!-- Pest test descriptions are sentences, so line length is not enforced there. -->
+    <!-- Pest test descriptions and translation strings are sentences, so line length is not enforced there. -->
     <rule ref="Generic.Files.LineLength">
         <exclude-pattern>/tests/*</exclude-pattern>
+        <exclude-pattern>/resources/lang/*</exclude-pattern>
     </rule>
 
     <!-- Pest test files declare helpers and register tests in the same file. -->
