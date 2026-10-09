@@ -512,6 +512,8 @@ Run `php artisan migrate` to create the `notification_settings` table. Without i
 
 Set `settings.middleware` to something that authorizes your administrators, or turn the page off with `settings.route_enabled`. By default it is `['web', 'auth']`, which lets any signed in user change the colours for everyone.
 
+If you are on 2.0.0, 2.0.1 or 2.1.0 and removed your own `create_notifications_table` migration because the package created the table for you, restore it with `php artisan make:notifications-table`. The package no longer creates the table, so a fresh environment, such as CI or a new developer machine, needs Laravel's own migration to create it. Existing databases are unaffected.
+
 If you cache config, run `php artisan config:clear` and then `php artisan config:cache` again. You do not need to republish the config, because Laravel merges the package config at the top level and picks up the new keys.
 
 Notification colours now come from `config('notifications.colors')` through CSS custom properties instead of hardcoded Tailwind and Bootstrap classes. The shipped defaults are close to the previous colours. Bootstrap 5 and Bootstrap 4 now tint rows by notification type, which they did not before. If you published the views, your copies keep their old colours until you publish again.
