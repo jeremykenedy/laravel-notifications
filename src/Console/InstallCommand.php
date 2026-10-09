@@ -31,7 +31,13 @@ class InstallCommand extends Command
 
         $frontend = $this->option('frontend') ?? select(
             label: 'Frontend Framework',
-            options: ['blade' => 'Blade + Alpine.js', 'livewire' => 'Livewire', 'vue' => 'Vue 3', 'react' => 'React', 'svelte' => 'Svelte'],
+            options: [
+                'blade'    => 'Blade + Alpine.js',
+                'livewire' => 'Livewire',
+                'vue'      => 'Vue 3',
+                'react'    => 'React',
+                'svelte'   => 'Svelte',
+            ],
             default: Frameworks::DEFAULT_FRONTEND,
         );
 
@@ -58,14 +64,17 @@ class InstallCommand extends Command
         $frontendWritten = $this->setFrontendFramework($frontend);
 
         if (!$cssWritten || !$frontendWritten) {
-            $this->warn('No writable .env file was found. Set NOTIFICATIONS_CSS_FRAMEWORK and NOTIFICATIONS_FRONTEND by hand.');
+            $this->warn(
+                'No writable .env file was found. Set NOTIFICATIONS_CSS_FRAMEWORK and NOTIFICATIONS_FRONTEND by hand.',
+            );
         }
 
         $this->clearCachedConfig();
 
         info('notifications installed successfully.');
         info('Run: php artisan migrate && npm run build');
-        info('Colors can be changed at '.config('notifications.settings.prefix', 'notifications/settings').' once migrated.');
+        $settingsPage = config('notifications.settings.prefix', 'notifications/settings');
+        info('Colors can be changed at '.$settingsPage.' once migrated.');
 
         return self::SUCCESS;
     }

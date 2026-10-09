@@ -28,8 +28,8 @@ class NotificationSettingsController extends Controller
 
     public function update(UpdateNotificationColorsRequest $request): RedirectResponse
     {
-        if ($missing = $this->tableMissing()) {
-            return $missing->withInput();
+        if (!$this->settings->available()) {
+            return $this->tableMissing()->withInput();
         }
 
         $this->settings->save($request->colors());
@@ -39,8 +39,8 @@ class NotificationSettingsController extends Controller
 
     public function reset(): RedirectResponse
     {
-        if ($missing = $this->tableMissing()) {
-            return $missing;
+        if (!$this->settings->available()) {
+            return $this->tableMissing();
         }
 
         $this->settings->reset();
@@ -48,12 +48,8 @@ class NotificationSettingsController extends Controller
         return $this->done('settings_reset');
     }
 
-    protected function tableMissing(): ?RedirectResponse
+    protected function tableMissing(): RedirectResponse
     {
-        if ($this->settings->available()) {
-            return null;
-        }
-
         return back()->withErrors(['colors' => __('notifications::notifications.settings_table_missing')]);
     }
 
