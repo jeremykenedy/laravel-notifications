@@ -61,7 +61,11 @@ class NotificationService
 
     public function markAsUnread(Authenticatable $user, string $notificationId): bool
     {
-        return $this->withNotification($user, $notificationId, fn ($notification) => $notification->update(['read_at' => null]));
+        return $this->withNotification(
+            $user,
+            $notificationId,
+            fn ($notification) => $notification->update(['read_at' => null]),
+        );
     }
 
     // ---- Archive ----
@@ -76,7 +80,11 @@ class NotificationService
 
     public function unarchive(Authenticatable $user, string $notificationId): bool
     {
-        return $this->withNotification($user, $notificationId, fn ($notification) => $notification->update(['archived_at' => null]));
+        return $this->withNotification(
+            $user,
+            $notificationId,
+            fn ($notification) => $notification->update(['archived_at' => null]),
+        );
     }
 
     public function archiveAll(Authenticatable $user): int

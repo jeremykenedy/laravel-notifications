@@ -104,6 +104,7 @@ class Settings
      * Only configurable keys with a six digit hex value survive, lowercased.
      *
      * @param array<string, mixed> $colors
+     *
      * @return array<string, string>
      */
     protected function valid(array $colors): array
