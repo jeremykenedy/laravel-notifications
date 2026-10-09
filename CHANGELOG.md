@@ -8,6 +8,11 @@ The major release of everything in 2.1.0, plus internal refactors and static ana
 
 2.1.0 added a database table, new routes and new config, and turned on by default a settings page that any signed in user can use to change the notification colours for everyone. That is a change to the security posture and the schema of an existing installation, which is a contract change and not a compatible feature, so it is released as 3.0.0. The 2.1.0 tag stays where it is.
 
+### Fixed
+
+- `php artisan migrate` failed on a fresh application that followed the README. Since 2.0.0 the `archived_at` migration created the `notifications` table when it found none, and because it is dated before any migration the application generates, it ran first, so Laravel's own `create_notifications_table` then failed with "table already exists". The package never creates the table now. The column is added by a migration named `2099_01_01_000000_add_archived_at_to_notifications_table`, which sorts after the application's own, and the old file is kept as a no-op for installs that already ran it. Found by running the install and upgrade flows in a real Laravel application, which the package's own test suite could not reproduce because it never runs the two migrations together.
+- The same migration silently recorded itself as run when it found no table, and an application that created the table afterwards never got the column. It still does nothing when there is no table, and the README now says how to re-run it.
+
 ### Changed
 
 - `NotificationService` no longer repeats the find, check, update shape in four methods. It lives in one protected `withNotification()` helper, so the ownership check cannot drift between them. Public signatures and behavior are unchanged, and a missing or foreign notification is still never touched.

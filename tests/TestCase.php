@@ -182,7 +182,7 @@ abstract class TestCase extends OrchestraTestCase
 
     protected function packageMigration(): object
     {
-        return require __DIR__.'/../database/migrations/2026_03_28_000001_add_archived_at_to_notifications_table.php';
+        return require __DIR__.'/../database/migrations/2099_01_01_000000_add_archived_at_to_notifications_table.php';
     }
 
     protected function makeUser(string $email = 'user@example.test'): User
