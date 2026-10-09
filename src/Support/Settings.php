@@ -83,10 +83,8 @@ class Settings
      */
     public function apply(array $colors): void
     {
-        foreach ($colors as $key => $color) {
-            if (in_array($key, Colors::keys(), true) && Colors::isValid($color)) {
-                config(['notifications.colors.'.$key => strtolower($color)]);
-            }
+        foreach ($this->valid($colors) as $key => $color) {
+            config(['notifications.colors.'.$key => $color]);
         }
     }
 
@@ -95,17 +93,30 @@ class Settings
      */
     public function save(array $colors): void
     {
-        $clean = [];
-
-        foreach (Colors::keys() as $key) {
-            if (isset($colors[$key]) && Colors::isValid($colors[$key])) {
-                $clean[$key] = strtolower($colors[$key]);
-            }
-        }
+        $clean = $this->valid($colors);
 
         $this->model()->newQuery()->updateOrCreate(['key' => self::KEY], ['value' => $clean]);
 
         $this->apply($clean);
+    }
+
+    /**
+     * Only configurable keys with a six digit hex value survive, lowercased.
+     *
+     * @param array<string, mixed> $colors
+     * @return array<string, string>
+     */
+    protected function valid(array $colors): array
+    {
+        $valid = [];
+
+        foreach (Colors::keys() as $key) {
+            if (isset($colors[$key]) && Colors::isValid($colors[$key])) {
+                $valid[$key] = strtolower($colors[$key]);
+            }
+        }
+
+        return $valid;
     }
 
     /**
