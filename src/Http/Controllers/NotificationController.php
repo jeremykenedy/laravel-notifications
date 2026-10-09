@@ -35,7 +35,10 @@ class NotificationController extends Controller
         $archivedCount = $this->service->archivedCount($request->user());
         $totalCount = $request->user()->notifications()->count();
 
-        return view('notifications::index', compact('notifications', 'unreadCount', 'archivedCount', 'showArchived', 'totalCount'));
+        return view(
+            'notifications::index',
+            compact('notifications', 'unreadCount', 'archivedCount', 'showArchived', 'totalCount'),
+        );
     }
 
     public function markAsRead(Request $request, string $id)

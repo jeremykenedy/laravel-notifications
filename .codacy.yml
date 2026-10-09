@@ -1,0 +1,4 @@
+---
+exclude_paths:
+  - "**/*.blade.php"
+  - "art/**"

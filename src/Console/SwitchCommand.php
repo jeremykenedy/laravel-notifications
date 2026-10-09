@@ -22,36 +22,17 @@ class SwitchCommand extends Command
     {
         $css = $this->option('css');
         $frontend = $this->option('frontend');
+        $problem = $this->problemWith($css, $frontend);
 
-        if (!$css && !$frontend) {
-            $this->error('Provide --css and/or --frontend');
-
-            return self::FAILURE;
-        }
-
-        if ($css && !Frameworks::isValidCss($css)) {
-            $this->error("Invalid CSS: $css");
+        if ($problem !== null) {
+            $this->error($problem);
 
             return self::FAILURE;
         }
 
-        if ($frontend && !Frameworks::isValidFrontend($frontend)) {
-            $this->error("Invalid frontend: $frontend");
-
-            return self::FAILURE;
-        }
-
-        $written = true;
-
-        if ($css) {
-            $written = $this->setCssFramework($css) && $written;
-            $this->info("Laravel Notifications CSS switched to: $css");
-        }
-
-        if ($frontend) {
-            $written = $this->setFrontendFramework($frontend) && $written;
-            $this->info("Laravel Notifications frontend switched to: $frontend");
-        }
+        $written = $this->switchTo($css, 'CSS', fn (string $value) => $this->setCssFramework($value));
+        $written = $this->switchTo($frontend, 'frontend', fn (string $value) => $this->setFrontendFramework($value))
+            && $written;
 
         if (!$written) {
             $this->warn('No writable .env file was found. The change applies to this process only.');
@@ -60,5 +41,38 @@ class SwitchCommand extends Command
         $this->clearCachedConfig();
 
         return self::SUCCESS;
+    }
+
+    protected function problemWith(?string $css, ?string $frontend): ?string
+    {
+        if (!$css && !$frontend) {
+            return 'Provide --css and/or --frontend';
+        }
+
+        if ($css && !Frameworks::isValidCss($css)) {
+            return "Invalid CSS: $css";
+        }
+
+        if ($frontend && !Frameworks::isValidFrontend($frontend)) {
+            return "Invalid frontend: $frontend";
+        }
+
+        return null;
+    }
+
+    /**
+     * Apply one option and report it. Returns false only when the value could
+     * not be written to .env, and true when there was nothing to switch.
+     */
+    protected function switchTo(?string $value, string $label, callable $apply): bool
+    {
+        if (!$value) {
+            return true;
+        }
+
+        $written = $apply($value);
+        $this->info("Laravel Notifications {$label} switched to: $value");
+
+        return $written;
     }
 }

@@ -80,9 +80,10 @@ final class Colors
      */
     public static function rgba(string $color, float $alpha): string
     {
-        [$r, $g, $b] = self::rgb($color);
+        [$red, $green, $blue] = self::rgb($color);
+        $alpha = rtrim(rtrim(number_format($alpha, 3, '.', ''), '0'), '.');
 
-        return sprintf('rgba(%d, %d, %d, %s)', $r, $g, $b, rtrim(rtrim(number_format($alpha, 3, '.', ''), '0'), '.'));
+        return sprintf('rgba(%d, %d, %d, %s)', $red, $green, $blue, $alpha);
     }
 
     /**
@@ -106,15 +107,15 @@ final class Colors
      */
     public static function readableOn(string $color): string
     {
-        [$r, $g, $b] = self::rgb($color);
+        [$red, $green, $blue] = self::rgb($color);
 
         $channel = static function (int $value): float {
-            $v = $value / 255;
+            $scaled = $value / 255;
 
-            return $v <= 0.03928 ? $v / 12.92 : (($v + 0.055) / 1.055) ** 2.4;
+            return $scaled <= 0.03928 ? $scaled / 12.92 : (($scaled + 0.055) / 1.055) ** 2.4;
         };
 
-        $luminance = 0.2126 * $channel($r) + 0.7152 * $channel($g) + 0.0722 * $channel($b);
+        $luminance = 0.2126 * $channel($red) + 0.7152 * $channel($green) + 0.0722 * $channel($blue);
 
         return $luminance > 0.179 ? '#111827' : '#ffffff';
     }

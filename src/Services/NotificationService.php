@@ -169,9 +169,11 @@ class NotificationService
 
         if ($users instanceof Authenticatable) {
             $users->notify($notification);
-        } else {
-            Notification::send($users, $notification);
+
+            return;
         }
+
+        Notification::send($users, $notification);
     }
 
     /**
@@ -206,7 +208,7 @@ class NotificationService
         bool $sendEmail = false,
     ): int {
         $userModel = config('notifications.user_model', 'App\\Models\\User');
-        $users = $userModel::whereHas('roles', fn ($q) => $q->where('slug', $roleSlug))->get();
+        $users = $userModel::whereHas('roles', fn ($query) => $query->where('slug', $roleSlug))->get();
 
         $this->send($users, $title, $message, $type, $actionUrl, $actionText, $sendEmail);
 

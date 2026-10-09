@@ -24,7 +24,8 @@ A complete in-app notification center for Laravel with bell badge, unread count,
     <a href="https://github.com/sponsors/jeremykenedy"><img src="https://img.shields.io/static/v1?label=Sponsor&amp;message=%E2%9D%A4&amp;logo=GitHub&amp;color=%23fe8e86" alt="Sponsor me on GitHub"></a>
 </p>
 
-#### Table of Contents
+## Table of Contents
+
 - [Features](#features)
 - [Requirements](#requirements)
 - [Installation](#installation)
