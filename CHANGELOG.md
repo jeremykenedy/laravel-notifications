@@ -4,9 +4,21 @@ All notable changes to this package are documented here.
 
 ## 3.0.0 - 2026-10-09
 
-This release contains exactly the code of 2.1.0, published under a major version number.
+The major release of everything in 2.1.0, plus internal refactors and static analysis configuration that do not change behavior.
 
 2.1.0 added a database table, new routes and new config, and turned on by default a settings page that any signed in user can use to change the notification colours for everyone. That is a change to the security posture and the schema of an existing installation, which is a contract change and not a compatible feature, so it is released as 3.0.0. The 2.1.0 tag stays where it is.
+
+### Changed
+
+- `NotificationService` no longer repeats the find, check, update shape in four methods. It lives in one protected `withNotification()` helper, so the ownership check cannot drift between them. Public signatures and behavior are unchanged, and a missing or foreign notification is still never touched.
+- `notifications:switch` is split into small methods with identical output and exit codes. The settings validation that `save()` and `apply()` both did is now one method.
+- Colour channels are named instead of single letters, `NotificationService::send()` returns early instead of using `else`, and the settings controller no longer assigns inside a condition.
+- The CI workflow references all third party actions by commit SHA instead of by tag, so a moved tag cannot silently change what runs.
+
+### Added
+
+- `phpcs.xml`, `phpmd.xml`, `.markdownlint.json` and `.codacy.yml`, so static analysis checks the package against the standard it is actually written to. Codacy grades the package A with a score of 100 and no issues.
+- A Codacy grade badge in the README.
 
 ### Upgrading
 
